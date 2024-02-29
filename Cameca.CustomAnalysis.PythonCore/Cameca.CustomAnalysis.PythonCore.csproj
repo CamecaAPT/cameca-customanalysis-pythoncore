@@ -9,6 +9,24 @@
 		<AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	</PropertyGroup>
 
+	<PropertyGroup>
+		<Title>Cameca.CustomAnalysis.PythonCore</Title>
+		<Authors>CAMECA Instruments, Inc</Authors>
+		<Company>CAMECA Instruments, Inc.</Company>
+		<Product>AP Suite</Product>
+		<Description>Core class library that provides tools for using Python to create extensions for AP Suite</Description>
+		<Copyright>Copyright (c) CAMECA Instruments, Inc 2024</Copyright>
+		<PackageIcon>Cameca.png</PackageIcon>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageLicenseFile>LICENSE</PackageLicenseFile>
+		<RepositoryUrl>https://github.com/CamecaAPT/cameca-customanalysis-pythoncore</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+	</PropertyGroup>
+
 	<ItemGroup>
 		<Resource Include="Images\python-16x16.png" />
 	</ItemGroup>
@@ -50,8 +68,18 @@
 	</ItemGroup>
 
 	<ItemGroup>
-		<None Update="PythonModules\**\*.py">
+		<None Include="Cameca.png" Pack="true" PackagePath="" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<None Include="..\README.md" Pack="True" PackagePath="\" />
+		<None Include="..\LICENSE" Pack="True" PackagePath="\" />
+		<None Include="Cameca.png" Pack="True" PackagePath="\" />
+		<None Include="PythonModules\**\*.py">
+			<Pack>true</Pack>
+			<PackagePath>contentFiles\any\any\PythonModules\</PackagePath>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+			<Link>PythonModules\%(RecursiveDir)%(Filename)%(Extension)</Link>
 		</None>
 	</ItemGroup>
 
