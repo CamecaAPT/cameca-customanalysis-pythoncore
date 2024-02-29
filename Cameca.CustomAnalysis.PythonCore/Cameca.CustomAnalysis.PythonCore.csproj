@@ -80,6 +80,7 @@
 			<PackagePath>contentFiles\any\any\PythonModules\</PackagePath>
 			<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
 			<Link>PythonModules\%(RecursiveDir)%(Filename)%(Extension)</Link>
+			<PackageCopyToOutput>true</PackageCopyToOutput>
 		</None>
 	</ItemGroup>
 
