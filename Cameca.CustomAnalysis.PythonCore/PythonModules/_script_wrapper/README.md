@@ -1,0 +1,2 @@
+Scripts used by the .NET runtime to wrap an arbitrary string Python test in an executable format while injecting optional arguments.
+This is useful for creating in-application view Python editors where the script text should be executed dynamically at runtime

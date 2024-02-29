@@ -1,0 +1,50 @@
+# top-most EditorConfig file
+root = true
+
+# Use tabs in all code files applicable to this project
+[*.{cs,csx,c,cpp,h,hpp}]
+indent_style = tab
+insert_final_newline = true
+charset = utf-8-bom
+
+# C# files
+[*.cs]
+csharp_style_namespace_declarations = file_scoped:warning
+
+# Private fields: camelCase without underscore prefix
+dotnet_naming_rule.private_fields_should_be_camel_case.severity = suggestion
+dotnet_naming_rule.private_fields_should_be_camel_case.symbols  = private_fields
+dotnet_naming_rule.private_fields_should_be_camel_case.style    = camel_case_style
+
+dotnet_naming_symbols.private_fields.applicable_kinds           = field
+dotnet_naming_symbols.private_fields.applicable_accessibilities = private
+dotnet_naming_symbols.private_fields.required_modifiers         = readonly, static
+
+dotnet_naming_style.camel_case_style.capitalization = camel_case
+
+# Interfaces: Begin with 'I'
+dotnet_naming_rule.interfaces_should_begin_with_i.severity = suggestion
+dotnet_naming_rule.interfaces_should_begin_with_i.symbols  = interfaces
+dotnet_naming_rule.interfaces_should_begin_with_i.style    = interface_prefix_style
+
+dotnet_naming_symbols.interfaces.applicable_kinds           = interface
+
+dotnet_naming_style.interface_prefix_style.required_prefix = I
+dotnet_naming_style.interface_prefix_style.capitalization  = pascal_case
+
+# Types and non-field members: PascalCase
+dotnet_naming_rule.types_and_non_field_members_should_be_pascal_case.severity = suggestion
+dotnet_naming_rule.types_and_non_field_members_should_be_pascal_case.symbols  = types_and_non_field_members
+dotnet_naming_rule.types_and_non_field_members_should_be_pascal_case.style    = pascal_case_style
+
+dotnet_naming_symbols.types_and_non_field_members.applicable_kinds           = class, struct, enum, property, method, event
+dotnet_naming_style.pascal_case_style.capitalization = pascal_case
+
+# Constants: PascalCase
+dotnet_naming_rule.constants_should_be_pascal_case.severity = suggestion
+dotnet_naming_rule.constants_should_be_pascal_case.symbols  = constants
+dotnet_naming_rule.constants_should_be_pascal_case.style    = pascal_case_style
+
+dotnet_naming_symbols.constants.applicable_kinds           = field
+dotnet_naming_symbols.constants.applicable_accessibilities = public, private
+dotnet_naming_symbols.constants.required_modifiers         = const
