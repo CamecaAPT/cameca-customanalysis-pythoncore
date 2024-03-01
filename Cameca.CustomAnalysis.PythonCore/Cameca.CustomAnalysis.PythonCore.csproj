@@ -32,12 +32,12 @@
 	</ItemGroup>
 
 	<ItemGroup Label="Package Dependencies">
-		<PackageReference Include="Cameca.CustomAnalysis.Interface" Version="3.3.0-alpha.17" />
+		<PackageReference Include="Cameca.CustomAnalysis.Interface" Version="3.3.0-beta.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.0.0" />
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
 		<PackageReference Include="Prism.Wpf" Version="8.1.97" />
-		<PackageReference Include="pythonnet" Version="3.0.3" />
+		<PackageReference Include="QuantConnect.pythonnet" Version="2.0.26" />
 	</ItemGroup>
 
 	<ItemGroup>
