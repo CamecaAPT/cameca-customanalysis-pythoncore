@@ -23,6 +23,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 		.github\workflows\release-deployment.yml = .github\workflows\release-deployment.yml
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cameca.CustomAnalysis.PythonCoreLib", "Cameca.CustomAnalysis.PythonCoreLib\Cameca.CustomAnalysis.PythonCoreLib.csproj", "{1067F60F-8B47-4068-A19D-A3C88639D191}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{44EADDD6-1BDA-4771-B5BF-7DB83094B86A}.Debug|Any CPU.Build.0 = Debug|x64
 		{44EADDD6-1BDA-4771-B5BF-7DB83094B86A}.Release|Any CPU.ActiveCfg = Release|x64
 		{44EADDD6-1BDA-4771-B5BF-7DB83094B86A}.Release|Any CPU.Build.0 = Release|x64
+		{1067F60F-8B47-4068-A19D-A3C88639D191}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1067F60F-8B47-4068-A19D-A3C88639D191}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1067F60F-8B47-4068-A19D-A3C88639D191}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1067F60F-8B47-4068-A19D-A3C88639D191}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -46,6 +46,7 @@ internal sealed class PythonManager : IPythonManager
 			// If successfully initialized, paths must be added to sys.path so that included extension scripts can be located and imported
 			var addPythonPaths = new string[]
 			{
+				Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)),
 				Path.Join(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), BundledPythonPackagesDirectoryRelativePath),
 			};
 			using (Py.GIL())

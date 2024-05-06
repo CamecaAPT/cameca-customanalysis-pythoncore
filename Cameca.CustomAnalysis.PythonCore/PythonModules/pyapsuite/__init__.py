@@ -8,7 +8,7 @@
 # import os
 # if os.getenv("PYTHON_NET_MODE") != "CSharp":
 #     import pathlib
-#     # Relative path, needs to point at the root extension directory with .runtimeconfig.json and Cameca.CustomAnalyis.Interface.dll
+#     # Relative path, needs to point at the root extension directory with .runtimeconfig.json and Cameca.CustomAnalysis.Interface.dll
 #     extension_root = pathlib.Path(__file__).parent.parent.parent
 #     import pythonnet
 #     # Need to call load 'coreclr' to load .NET Core instead of framework before calling import clr
@@ -22,6 +22,10 @@
 #     import clr
 #     clr.AddReference("Cameca.CustomAnalysis.Interface")
 
+import clr
+clr.AddReference("Cameca.CustomAnalysis.PythonCoreLib")
+import Cameca.CustomAnalysis.PythonCoreLib
+
 from .pyapsuite_models import (IonInfo, Range, IonRanges, Vector3, Extents)
 from .pyapsuite_enums import (AquisitionMode, InstrumentModel, InvizoBeamMode, LaserBand)
 from .pyapsuite_experiment import (Experiment)
@@ -29,3 +33,4 @@ from .pyapsuite_errors import (PyAPSuiteError)
 from .pyapsuite_sections import (Section, Sections, SectionDefinition)
 from .pyapsuite_context import (APSuiteContext)
 from .pyapsuite_elements import (Isotope, Element)
+from .pyapsuite_chart import (ChartObject, Surface, Points, Spheres, MainChart)

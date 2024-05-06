@@ -84,4 +84,8 @@
 		</None>
 	</ItemGroup>
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Cameca.CustomAnalysis.PythonCoreLib\Cameca.CustomAnalysis.PythonCoreLib.csproj" />
+	</ItemGroup>
+
 </Project>

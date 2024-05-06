@@ -1,5 +1,5 @@
 # Type alias: ion formulas are represended as a dictionary of element names and counts
-IonFormula = dict[str: int]
+IonFormula = dict[str, int]
 
 class Vector3:
     def __init__(self, x: float, y: float, z: float):

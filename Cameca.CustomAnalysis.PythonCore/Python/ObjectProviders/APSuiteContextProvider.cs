@@ -2,7 +2,6 @@
 using Prism.Ioc;
 using Python.Runtime;
 using System;
-using System.Buffers;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
@@ -17,6 +16,10 @@ public class APSuiteContextProvider : IPyObjectProvider
 	private readonly IElementDataSetService elementDataSetService;
 	private readonly IReconstructionSections? reconstructionSections;
 	private readonly IExperimentInfoResolver? experimentInfoResolver;
+	private readonly IChart3D? chart3d;
+	private readonly IRenderDataFactory? renderDataFactory;
+	private readonly IContainerProvider containerProvider;
+	private readonly Guid instanceId;
 
 	public APSuiteContextProvider(
 		IIonData ionData,
@@ -24,6 +27,8 @@ public class APSuiteContextProvider : IPyObjectProvider
 		Guid instanceId)
 	{
 		this.ionData = ionData;
+		this.containerProvider = containerProvider;
+		this.instanceId = instanceId;
 		this.ionDisplayInfo = containerProvider.Resolve<IIonDisplayInfoProvider>().Resolve(instanceId);
 		// Only allow fetching and setting ranges from root level - no spatial ranging support for extensions
 		this.nodeInfo = containerProvider.Resolve<INodeInfoProvider>().Resolve(instanceId);
@@ -34,7 +39,9 @@ public class APSuiteContextProvider : IPyObjectProvider
 		this.elementDataSetService = containerProvider.Resolve<IElementDataSetService>();
 		this.reconstructionSections = containerProvider.Resolve<IReconstructionSectionsProvider>().Resolve(instanceId);
 		this.experimentInfoResolver = containerProvider.Resolve<IExperimentInfoProvider>().Resolve(instanceId);
-	}
+		this.chart3d = containerProvider.Resolve<IMainChartProvider>().Resolve(instanceId);
+		this.renderDataFactory = containerProvider.Resolve<IRenderDataFactory>();
+	}	
 
 	public PyObject GetPyObject(PyModule scope)
 	{
@@ -43,13 +50,8 @@ public class APSuiteContextProvider : IPyObjectProvider
 		//Environment.SetEnvironmentVariable("PYTHON_NET_MODE", "CSharp");
 		var pyapsuite = scope.Import("pyapsuite");
 		//var pyapsuite = scope.Import("adapters.apsuite_context");
-
-		// Pass in some functions that requre C# work
-		// TODO: Potentially extract to a C# class library and call directly from the script
-		var functions = new PyDict();
-		functions["ToIntPtr"] = new Func<MemoryHandle, IntPtr>(CSharpFunctions.ToIntPtr).ToPython();
-
 		// Pass in node scope resolved services
+
 		var services = new PyDict();
 		services["IIonDisplayInfo"] = ionDisplayInfo.ToPython();
 		services["INodeInfo"] = nodeInfo.ToPython();
@@ -60,12 +62,15 @@ public class APSuiteContextProvider : IPyObjectProvider
 		services["IIonDisplayInfo"] = ionDisplayInfo.ToPython();
 		services["IReconstructionSections"] = reconstructionSections.ToPython();
 		services["IExperimentInfoResolver"] = experimentInfoResolver.ToPython();
+		services["IChart3D"] = chart3d.ToPython();
+		services["IRenderDataFactory"] = renderDataFactory.ToPython();
+		services["IContainerProvider"] = containerProvider.ToPython();
 
 		var context = pyapsuite.InvokeMethod(
 			"APSuiteContext",
 			ionData.ToPython(),
 			services,
-			functions);
+			instanceId.ToPython());
 		return context;
 	}
 
@@ -81,9 +86,4 @@ public class APSuiteContextProvider : IPyObjectProvider
 		}
 		return ptrNodeId;
 	}
-}
-
-internal static class CSharpFunctions
-{
-	public unsafe static IntPtr ToIntPtr(MemoryHandle handle) => new IntPtr(handle.Pointer);
 }
