@@ -5,6 +5,7 @@ from .pyapsuite_experiment import *
 from .pyapsuite_elements import *
 from .pyapsuite_errors import *
 from .pyapsuite_chart import *
+from .pyapsuite_grid3d import *
 from .pyapsuite_colors import FALLBACK_COLOR_DEFINITIONS, Color
 import Cameca.CustomAnalysis.Interface as Interface
 
@@ -19,6 +20,9 @@ class APSuiteContext:
         self._sections = Sections(self._ion_data, self._services, lambda: self.data_section_name)
         self.experiment = Experiment(self._services["IExperimentInfoResolver"])
         self.chart = MainChart(self._services["IChart3D"], self._services["IRenderDataFactory"])
+        grid3DData = self._services["IGrid3DData"]
+        grid3DParameters = self._services["IGrid3DParameters"]
+        self.grid3d = Grid3D(grid3DData, grid3DParameters) if grid3DData is not None and grid3DParameters is not None else None
 
     @property
     def elements(self) -> list[Element]:
