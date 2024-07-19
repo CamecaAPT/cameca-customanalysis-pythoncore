@@ -36,6 +36,7 @@ public static class AnacondaDistributionContainerExtensions
 		registry.RegisterDialogWindow<AnacondaNotFoundDialogWindow>(nameof(AnacondaNotFoundDialogWindow));
 		registry.RegisterDialog<AnacondaNotFoundDialogView, AnacondaNotFoundDialogViewModel>();
 		registry.RegisterSingleton<AnacondaRegistryResolver>();
+		registry.RegisterSingleton<AnacondaFileResolver>();
 		registry.RegisterSingleton<AnacondaAutoResolver>();
 		registry.RegisterInstance(new AnacondaDistributionOptions
 		{
