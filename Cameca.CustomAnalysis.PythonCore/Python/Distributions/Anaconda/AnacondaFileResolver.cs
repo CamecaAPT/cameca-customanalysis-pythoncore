@@ -48,7 +48,7 @@ internal class AnacondaFileResolver
 		{
 			return null;
 		}
-		var fullConfigFileName = $"{assemblyName}.{ConfigFileNameSuffix}";
-		return Path.Join(executingAssembly.Location, fullConfigFileName);
+		var fullConfigFileName = $"{assemblyName}{ConfigFileNameSuffix}";
+		return Path.Join(Path.GetDirectoryName(executingAssembly.Location), fullConfigFileName);
 	}
 }
