@@ -37,7 +37,7 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="7.0.0" />
 		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
 		<PackageReference Include="Prism.Wpf" Version="8.1.97" />
-		<PackageReference Include="QuantConnect.pythonnet" Version="2.0.26" />
+		<PackageReference Include="QuantConnect.pythonnet" Version="2.0.38" />
 	</ItemGroup>
 
 	<ItemGroup>
