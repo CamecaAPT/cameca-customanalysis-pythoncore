@@ -94,7 +94,37 @@ class APSuiteContext:
             for ion in self._ion_data.Ions]
 
     @property
+    def ion_ranges(self) -> list[IonRange]:
+        ranges = self._services["IMassSpectrumRangeManager"].GetIonRanges()
+        return [
+            IonRange(
+                r.Name,
+                get_ion_formula(ion.Formula),
+                r.Volume,
+                r.Min,
+                r.Max,
+                get_pyapsuite_color(r.Color)
+            )
+            for r in ranges
+        ]
+
+    @ion_ranges.setter
+    def ion_ranges(self, ranges: list[IonRange]) -> None:
+        net_ranges = System.Collections.Generic.List[Cameca.CustomAnalysis.Interface.IonTypeInfoRange]()
+        for ion_type_ranges in ranges:
+            name: str | None = ion_type_ranges["name"] if "name" in ion_type_ranges else None
+            ion_formula = create_ion_formula(ion_type_ranges["formula"])
+            volume: float | None = float(ion_type_ranges["volume"]) if "volume" in ion_type_ranges else None
+            min: float | None = float(ion_type_ranges["min"]) if "min" in ion_type_ranges else None
+            max: float | None = float(ion_type_ranges["max"]) if "max" in ion_type_ranges else None
+            color: Color | None = get_net_color(ion_type_ranges["color"]) if "color" in ion_type_ranges else None
+            net_ranges.Add(Cameca.CustomAnalysis.Interface.IonTypeInfoRange(name, ion_formula, volume, min, max, color))
+        
+        self._services["IMassSpectrumRangeManager"].SetIonRangesSync(net_ranges)
+
+    @property
     def ranges(self) -> list[IonRanges]:
+        """Deprecated: Use ion_ranges instead. This method does not correctly handle multiple unknown ions and has less functionality"""
         ranges = self._services["IMassSpectrumRangeManager"].GetRanges()
         return [
             IonRanges(

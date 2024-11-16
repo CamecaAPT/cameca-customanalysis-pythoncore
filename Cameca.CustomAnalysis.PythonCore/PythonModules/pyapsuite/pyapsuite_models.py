@@ -43,3 +43,12 @@ class IonRanges:
         self.formula = formula
         self.volume = volume
         self.ranges = ranges
+
+class IonRange:
+    def __init__(self, name: str, formula: IonFormula, volume: float, min: float, max: float, color: Color):
+        self.name = name
+        self.formula = formula
+        self.volume = volume
+        self.min = min
+        self.max = max
+        self.color = color
