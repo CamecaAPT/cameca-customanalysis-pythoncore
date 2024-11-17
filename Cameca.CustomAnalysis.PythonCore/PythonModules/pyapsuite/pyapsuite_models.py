@@ -1,4 +1,5 @@
 from typing import TypeVar, Generic
+from .pyapsuite_colors import Color
 
 T = TypeVar('T', int, float)
 
@@ -11,8 +12,8 @@ class Vector3(Generic[T]):
         self.y = y
         self.z = z
 
-    def __str__(self):
-        return f"Vector3(x={self.x},y={self.y},z={self.z})"
+    def __str__(self) -> str:
+        return _std_str(self)
 
 
 class Extents:
@@ -20,8 +21,8 @@ class Extents:
         self.min = min
         self.max = max
 
-    def __str__(self):
-        return f"Extents(min={self.min},max={self.max})"
+    def __str__(self) -> str:
+        return _std_str(self)
 
 class IonInfo:
     def __init__(self, name: str, formula: IonFormula, volume: float, count: int):
@@ -30,11 +31,17 @@ class IonInfo:
         self.volume = volume
         self.count = count
 
+    def __str__(self) -> str:
+        return _std_str(self)
+
 
 class Range:
     def __init__(self, min: float, max: float):
         self.min = min
         self.max = max
+
+    def __str__(self) -> str:
+        return _std_str(self)
 
 
 class IonRanges:
@@ -44,6 +51,9 @@ class IonRanges:
         self.volume = volume
         self.ranges = ranges
 
+    def __str__(self) -> str:
+        return _std_str(self)
+
 class IonRange:
     def __init__(self, name: str, formula: IonFormula, volume: float, min: float, max: float, color: Color):
         self.name = name
@@ -52,3 +62,15 @@ class IonRange:
         self.min = min
         self.max = max
         self.color = color
+
+    def __str__(self) -> str:
+        return _std_str(self)
+
+
+def _std_str(instance) -> str:
+    attrs = ','.join(
+        f"{k}={v!r}"
+        for k, v in vars(instance).items()
+        if not k.startswith('_')
+    )
+    return f"{instance.__class__.__name__}({attrs})"

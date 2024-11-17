@@ -26,7 +26,7 @@ import clr
 clr.AddReference("Cameca.CustomAnalysis.PythonCoreLib")
 import Cameca.CustomAnalysis.PythonCoreLib
 
-from .pyapsuite_models import (IonInfo, Range, IonRanges, Vector3, Extents)
+from .pyapsuite_models import (IonInfo, Range, IonRanges, Vector3, Extents, IonRange)
 from .pyapsuite_enums import (AquisitionMode, InstrumentModel, InvizoBeamMode, LaserBand)
 from .pyapsuite_experiment import (Experiment)
 from .pyapsuite_errors import (PyAPSuiteError)

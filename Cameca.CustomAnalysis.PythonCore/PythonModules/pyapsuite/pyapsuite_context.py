@@ -99,7 +99,7 @@ class APSuiteContext:
         return [
             IonRange(
                 r.Name,
-                get_ion_formula(ion.Formula),
+                get_ion_formula(r.Formula),
                 r.Volume,
                 r.Min,
                 r.Max,
@@ -111,14 +111,15 @@ class APSuiteContext:
     @ion_ranges.setter
     def ion_ranges(self, ranges: list[IonRange]) -> None:
         net_ranges = System.Collections.Generic.List[Cameca.CustomAnalysis.Interface.IonTypeInfoRange]()
-        for ion_type_ranges in ranges:
-            name: str | None = ion_type_ranges["name"] if "name" in ion_type_ranges else None
-            ion_formula = create_ion_formula(ion_type_ranges["formula"])
-            volume: float | None = float(ion_type_ranges["volume"]) if "volume" in ion_type_ranges else None
-            min: float | None = float(ion_type_ranges["min"]) if "min" in ion_type_ranges else None
-            max: float | None = float(ion_type_ranges["max"]) if "max" in ion_type_ranges else None
-            color: Color | None = get_net_color(ion_type_ranges["color"]) if "color" in ion_type_ranges else None
-            net_ranges.Add(Cameca.CustomAnalysis.Interface.IonTypeInfoRange(name, ion_formula, volume, min, max, color))
+        for r in ranges:
+            net_ranges.Add(Cameca.CustomAnalysis.Interface.IonTypeInfoRange(
+                r.name,
+                create_ion_formula(r.formula),
+                float(r.volume),
+                float(r.min),
+                float(r.max),
+                get_net_color(r.color)
+            ))
         
         self._services["IMassSpectrumRangeManager"].SetIonRangesSync(net_ranges)
 
