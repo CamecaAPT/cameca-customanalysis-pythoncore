@@ -1,7 +1,9 @@
 ﻿using Python.Runtime;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -35,6 +37,8 @@ internal class PyExecutor : IPyExecutor
 		// Inner function that will be run on a separate task for cancellation support
 		void TaskRunner()
 		{
+			var extensionDirectory = new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent?.FullName;
+			using var _dir = WorkingDirectory.Enter(extensionDirectory);
 			using var _ = Py.GIL();
 			Interlocked.Exchange(ref pythonThreadId, (long)PythonEngine.GetPythonThreadID());
 			using var scope = Py.CreateScope();
