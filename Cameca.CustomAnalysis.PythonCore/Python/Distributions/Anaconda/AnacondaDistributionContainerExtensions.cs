@@ -1,6 +1,4 @@
-﻿using Cameca.CustomAnalysis.PythonCore.Python;
-using Cameca.CustomAnalysis.PythonScript.Python.Distributions.Anaconda.AnacondaNotFoundDialog;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Prism.Ioc;
 

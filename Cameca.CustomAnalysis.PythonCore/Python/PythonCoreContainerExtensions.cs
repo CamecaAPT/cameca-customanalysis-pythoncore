@@ -1,6 +1,6 @@
 ﻿using Prism.Ioc;
 
-namespace Cameca.CustomAnalysis.PythonCore.Python;
+namespace Cameca.CustomAnalysis.PythonCore;
 
 public static class PythonCoreContainerExtensions
 {

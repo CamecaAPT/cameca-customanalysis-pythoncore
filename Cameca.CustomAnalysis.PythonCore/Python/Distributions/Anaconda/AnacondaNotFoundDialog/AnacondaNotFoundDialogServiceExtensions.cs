@@ -1,5 +1,4 @@
-﻿using Cameca.CustomAnalysis.PythonScript.Python.Distributions.Anaconda.AnacondaNotFoundDialog;
-using Prism.Services.Dialogs;
+﻿using Prism.Services.Dialogs;
 using System;
 
 namespace Cameca.CustomAnalysis.PythonCore;
