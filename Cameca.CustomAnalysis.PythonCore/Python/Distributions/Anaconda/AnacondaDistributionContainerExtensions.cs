@@ -1,11 +1,13 @@
 ﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Prism.Ioc;
+using System;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
 public static class AnacondaDistributionContainerExtensions
 {
+	[Obsolete("Use RegisterPythonDistribution instead. Allows more flexible configuration of Anaconda or use of other Python distributions")]
 	/// <summary>
 	/// Register use of an Anaconda Python distribute. If not resolved on the user machine, prompt for installation.
 	/// </summary>
