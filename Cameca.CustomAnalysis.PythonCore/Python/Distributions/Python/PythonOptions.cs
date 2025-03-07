@@ -49,10 +49,10 @@ public class PythonOptions : BindableBase
 	[Display(Name = "Try Auto-Configure Python Options")]
 	public DelegateCommand AutoConfigureCommand { get; }
 
-	private string? prependPathEnvVar;
+	private string prependPathEnvVar = "";
 	[Display(Name = "Additional PATH Environment Variable Paths")]
 	[FolderPath(AllowMultiple = true)]
-	public string? PrependPathEnvVar
+	public string PrependPathEnvVar
 	{
 		get => prependPathEnvVar;
 		set => SetProperty(ref prependPathEnvVar, value);
@@ -116,7 +116,10 @@ public class PythonOptions : BindableBase
 						PythonVenvDir = venvPath;
 						break;
 					case PythonCreateVenvResult.Deleted:
-						PythonVenvDir = null;
+						if (PythonVenvDir == venvPath)
+						{
+							PythonVenvDir = null;
+						}
 						break;
 					default:
 						break;
