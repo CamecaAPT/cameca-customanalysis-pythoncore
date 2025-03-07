@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Windows;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
@@ -21,7 +22,6 @@ internal class PythonDistribution : IPyDistribution
 
 	public bool Initialize()
 	{
-
 		try
 		{
 			return InitializeImpl();
@@ -29,6 +29,15 @@ internal class PythonDistribution : IPyDistribution
 		catch (Exception ex)
 		{
 			logger.LogWarning(ex, "Exception initializing Python distribution");
+			MessageBox.Show(
+				"Unable to initialize Python! Ensure Python is installed on your machine and configured for us in the Extension Options." + Environment.NewLine +
+				"Restart AP Suite after modifying the Python configuration in Extension Options and try again." + Environment.NewLine +
+				Environment.NewLine + Environment.NewLine +
+				ex.Message + Environment.NewLine +
+				ex.StackTrace,
+				"Error initializing Python",
+				MessageBoxButton.OK,
+				MessageBoxImage.Error);
 			return false;
 		}
 	}

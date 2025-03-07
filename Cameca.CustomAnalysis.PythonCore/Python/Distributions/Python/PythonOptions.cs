@@ -3,14 +3,11 @@ using Prism.Commands;
 using Prism.Mvvm;
 using Prism.Services.Dialogs;
 using Prism.Ioc;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Linq;
-using System.Windows;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
@@ -25,7 +22,7 @@ public class PythonOptions : BindableBase
 	public string? PythonDll
 	{
 		get => pythonDll;
-		set => SetProperty(ref pythonDll, value, () => TestCommand.RaiseCanExecuteChanged());
+		set => SetProperty(ref pythonDll, value);
 	}
 
 	private string? pythonExe;
@@ -34,11 +31,7 @@ public class PythonOptions : BindableBase
 	public string? PythonExe
 	{
 		get => pythonExe;
-		set => SetProperty(ref pythonExe, value, () =>
-		{
-			TestCommand.RaiseCanExecuteChanged();
-			AutoCreateVenvCommand.RaiseCanExecuteChanged();
-		});
+		set => SetProperty(ref pythonExe, value, () => AutoCreateVenvCommand.RaiseCanExecuteChanged());
 	}
 
 	[Display(Name = "Try Auto-Create Virtual Environment")]
@@ -50,11 +43,7 @@ public class PythonOptions : BindableBase
 	public string? PythonVenvDir
 	{
 		get => pythonVenvDir;
-		set => SetProperty(ref pythonVenvDir, value, () =>
-		{
-			AutoCreateVenvCommand.RaiseCanExecuteChanged();
-			AutoConfigureCommand.RaiseCanExecuteChanged();
-		});
+		set => SetProperty(ref pythonVenvDir, value, () => AutoConfigureCommand.RaiseCanExecuteChanged());
 	}
 
 	[Display(Name = "Try Auto-Configure Python Options")]
@@ -70,6 +59,7 @@ public class PythonOptions : BindableBase
 	}
 
 	private bool applyCondaIntelMklFix;
+	[Display(Name = "Apply Anaconda Fix", Description = "Sets KMP_DUPLICATE_LIB_OK=True. Necessary for Anaconda to function correctly with AP Suite. Enable when using Anaconda Python distributions, otherwise it likely should be disabled.")]
 	public bool ApplyCondaIntelMklFix
 	{
 		get => applyCondaIntelMklFix;
@@ -77,6 +67,7 @@ public class PythonOptions : BindableBase
 	}
 
 	private bool setNoSiteFlag = true;
+	[Display(Name = "Set NoSiteFlag", Description = "Disable the import of the module site and the site-dependent manipulations of sys.path that it entails.")]
 	public bool SetNoSiteFlag
 	{
 		get => setNoSiteFlag;
@@ -85,26 +76,12 @@ public class PythonOptions : BindableBase
 
 	private string? pythonHome;
 	[FolderPath]
+	[Display(Name = "PYTHONHOME Environment Variable")]
 	public string? PythonHome
 	{
 		get => pythonHome;
 		set => SetProperty(ref pythonHome, value);
 	}
-
-	private string? workingDirectory;
-	[Display(
-		Name = "Working Directory",
-		Description = "The directory that the Python extension is executed in. Paths encoded in the Python code are resolved relative to this directory.",
-		AutoGenerateField = false)]
-	[FolderPath]
-	public string? WorkingDirectory
-	{
-		get => workingDirectory;
-		set => SetProperty(ref workingDirectory, value);
-	}
-
-	[Display(Name = "Run Python Test Application", AutoGenerateField = false)]
-	public DelegateCommand TestCommand { get; }
 
 	[Display(Name = "Open Extension Directory")]
 	public DelegateCommand OpenDirectoryCommand { get; }
@@ -117,7 +94,6 @@ public class PythonOptions : BindableBase
 		extensionDirectory = new DirectoryInfo(Assembly.GetExecutingAssembly().Location).Parent!.FullName;
 		testAppPath = Path.Join(extensionDirectory, "PythonNetTest.exe");
 		AutoLocatePythonCommand = new DelegateCommand(AutoLocatePython);
-		TestCommand = new DelegateCommand(Test, () => File.Exists(PythonDll) && File.Exists(testAppPath));
 		OpenDirectoryCommand = new DelegateCommand(OpenDirectory);
 		AutoCreateVenvCommand = new DelegateCommand(AutoCreateVenv, CanAutoCreateVenv);
 		AutoConfigureCommand = new DelegateCommand(AutoConfigure);
@@ -125,47 +101,27 @@ public class PythonOptions : BindableBase
 
 	private void AutoCreateVenv()
 	{
-		var venvPath = !string.IsNullOrEmpty(PythonVenvDir)
-			? PythonVenvDir
-			: Path.Join(extensionDirectory, "venv");
-		if (!File.Exists(PythonExe) || Directory.Exists(venvPath))
+		if (!File.Exists(PythonExe))
 		{
 			return;
 		}
 
-		string pythonExePath = PythonExe;
-		string venvDirectory = venvPath;
-		string requirementsFile = Path.Join(extensionDirectory, "requirements.txt");
-
-		// Combine both commands into one
-		string createVenvCommand = $"\"{pythonExePath}\" -m venv \"{venvDirectory}\"";
-		string venvPythonExePath = Path.Join(venvDirectory, "Scripts", "python.exe");
-		string updatePipCommand = $"\"{venvPythonExePath}\" -m pip install --upgrade pip";
-		string installDepsCommand = $"\"{venvPythonExePath}\" -m pip install -r \"{requirementsFile}\"";
-
-		var subCommands = new List<string>
-		{
-			createVenvCommand,
-		};
-		if (File.Exists(requirementsFile))
-		{
-			subCommands.Add(updatePipCommand);
-			subCommands.Add(installDepsCommand);
-		}
-
-		string command = string.Join(" && ", subCommands);
-
-		// Run both commands in one console window
-		if (RunCommandInNewConsole(command))
-		{
-			MessageBox.Show("Virtual environment created successfully", "Virtual Environment Result", MessageBoxButton.OK);
-		}
-		else
-		{
-			MessageBox.Show("Error creating virtual environment", "Virtual Environment Result", MessageBoxButton.OK, MessageBoxImage.Error);
-		}
-
-		PythonVenvDir = venvPath;
+		var venvPath = Path.Join(extensionDirectory, "venv");
+		ContainerLocator.Container.Resolve<IDialogService>()
+			.ShowPythonVenvDialog(venvPath, PythonExe, extensionDirectory, (result) =>
+			{
+				switch (result.Parameters.GetValue<PythonCreateVenvResult>("createResult"))
+				{
+					case PythonCreateVenvResult.Created:
+						PythonVenvDir = venvPath;
+						break;
+					case PythonCreateVenvResult.Deleted:
+						PythonVenvDir = null;
+						break;
+					default:
+						break;
+				}
+			});
 	}
 
 	private void AutoConfigure()
@@ -215,47 +171,14 @@ public class PythonOptions : BindableBase
 		ApplyCondaIntelMklFix = false;
 	}
 
-	static bool RunCommandInNewConsole(string command)
-	{
-		ProcessStartInfo startInfo = new ProcessStartInfo
-		{
-			FileName = "cmd.exe",
-			Arguments = $"/c \"{command}\"",
-			UseShellExecute = false,
-			RedirectStandardOutput = true,
-			RedirectStandardError = true,
-			CreateNoWindow = true
-		};
-		var startInfoPaths = new List<string?>
-		{
-			Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Process),
-			Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.User),
-			Environment.GetEnvironmentVariable("PATH", EnvironmentVariableTarget.Machine),
-		};
-		var startInfoPath = string.Join(";", startInfoPaths.Where(x => !string.IsNullOrWhiteSpace(x)));
-		startInfo.EnvironmentVariables["PATH"] = startInfoPath;
-
-		using Process? process = Process.Start(startInfo);
-		if (process is null)
-		{
-			return false;
-		}
-		process.WaitForExit();
-		return process.ExitCode == 0;
-	}
-
-	private bool CanAutoCreateVenv() => File.Exists(PythonExe) && (string.IsNullOrEmpty(PythonVenvDir) || !Directory.Exists(PythonVenvDir));
+	private bool CanAutoCreateVenv() => File.Exists(PythonExe);
 
 	private void AutoLocatePython()
 	{
 		var installations = PythonLocator.FindPythonInstallations().ToList();
 
 		var dialogService = ContainerLocator.Container.Resolve<IDialogService>();
-		var dialogParams = new DialogParameters
-		{
-			{ "installations", installations }
-		};
-		dialogService.ShowDialog("PythonLocatorDialog", dialogParams, (dialogResult) =>
+		dialogService.ShowPythonLocatorDialog(installations, (dialogResult) =>
 		{
 			if (dialogResult.Result == ButtonResult.OK && dialogResult.Parameters.GetValue<PythonInstallation?>("selected") is { } selected)
 			{
@@ -277,30 +200,6 @@ public class PythonOptions : BindableBase
 			}
 		});
 
-	}
-
-	private void Test()
-	{
-		Process p = new Process();
-		ProcessStartInfo psi = new ProcessStartInfo();
-		psi.FileName = "cmd.exe";
-		string arguments = $"/K \"\"{testAppPath}\" \"{PythonDll}\"";
-		if (!string.IsNullOrWhiteSpace(PythonVenvDir))
-		{
-			arguments += $" \"{PythonVenvDir}\"";
-		}
-		arguments += "\"";
-		psi.Arguments = arguments;
-
-		//var arguments = new List<string> { "/K", $"\"{testAppPath}\"", $"\"{PythonDll}\"" };
-		//if (!string.IsNullOrWhiteSpace(PythonVenvDir))
-		//{
-		//	arguments.Add($"\"{PythonVenvDir}\"");
-		//}
-		//psi.ArgumentList.AddRange(arguments);
-		p.StartInfo = psi;
-		p.Start();
-		//p.WaitForExit();
 	}
 
 	private void OpenDirectory()
