@@ -1,4 +1,4 @@
-﻿namespace Cameca.CustomAnalysis.PythonScript.Python.Distributions.Anaconda.AnacondaNotFoundDialog;
+﻿namespace Cameca.CustomAnalysis.PythonCore;
 
 /// <summary>
 /// Interaction logic for AnacondaNotFoundDialogView.xaml

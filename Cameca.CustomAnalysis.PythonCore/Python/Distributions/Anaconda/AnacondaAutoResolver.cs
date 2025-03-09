@@ -11,14 +11,19 @@ internal class AnacondaAutoResolver
 	private static readonly string DefaultPerUserInstallationPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), "Anaconda3");
 	// https://docs.anaconda.com/anaconda/install/multi-user/
 	private static readonly string DefaultPerMachineInstallationPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "Anaconda");
+	// Experimentally identified alternative default installation location: no documentation found referencing change
+	private static readonly string AlternatePerUserInstallationPath = Path.Join(Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData), "Anaconda3");
+
 
 	private readonly ILogger<AnacondaAutoResolver> logger;
 	private readonly AnacondaRegistryResolver anacondaRegistryResolver;
+	private readonly AnacondaFileResolver anacondaFileResolver;
 
-	public AnacondaAutoResolver(ILogger<AnacondaAutoResolver> logger, AnacondaRegistryResolver anacondaRegistryResolver)
+	public AnacondaAutoResolver(ILogger<AnacondaAutoResolver> logger, AnacondaRegistryResolver anacondaRegistryResolver, AnacondaFileResolver anacondaFileResolver)
 	{
 		this.logger = logger;
 		this.anacondaRegistryResolver = anacondaRegistryResolver;
+		this.anacondaFileResolver = anacondaFileResolver;
 	}
 
 	/// <summary>
@@ -39,10 +44,13 @@ internal class AnacondaAutoResolver
 
 	private IEnumerable<string?> IterateAnacondaSearchPaths()
 	{
+		// Override all other search if defined in a settings file
+		yield return anacondaFileResolver.CheckAnacondaLocationFile();
 		// Check for latest version from registry
 		yield return CheckAnacondaLocationRegistrySafe();
 		// Check default per-user installation path
 		yield return DefaultPerUserInstallationPath;
+		yield return AlternatePerUserInstallationPath;
 		// Check default all-users installation path
 		yield return DefaultPerMachineInstallationPath;
 	}

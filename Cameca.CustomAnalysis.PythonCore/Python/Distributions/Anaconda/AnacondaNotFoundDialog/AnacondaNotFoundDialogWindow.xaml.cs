@@ -1,7 +1,7 @@
 ﻿using Prism.Services.Dialogs;
 using System.Windows.Input;
 
-namespace Cameca.CustomAnalysis.PythonScript.Python.Distributions.Anaconda.AnacondaNotFoundDialog;
+namespace Cameca.CustomAnalysis.PythonCore;
 /// <summary>
 /// Interaction logic for AnacondaNotFoundDialogWindow.xaml
 /// </summary>

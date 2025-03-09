@@ -1,13 +1,13 @@
-﻿using Cameca.CustomAnalysis.PythonCore.Python;
-using Cameca.CustomAnalysis.PythonScript.Python.Distributions.Anaconda.AnacondaNotFoundDialog;
-using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Prism.Ioc;
+using System;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
 public static class AnacondaDistributionContainerExtensions
 {
+	[Obsolete("Use RegisterPythonDistribution instead. Allows more flexible configuration of Anaconda or use of other Python distributions")]
 	/// <summary>
 	/// Register use of an Anaconda Python distribute. If not resolved on the user machine, prompt for installation.
 	/// </summary>
@@ -36,6 +36,7 @@ public static class AnacondaDistributionContainerExtensions
 		registry.RegisterDialogWindow<AnacondaNotFoundDialogWindow>(nameof(AnacondaNotFoundDialogWindow));
 		registry.RegisterDialog<AnacondaNotFoundDialogView, AnacondaNotFoundDialogViewModel>();
 		registry.RegisterSingleton<AnacondaRegistryResolver>();
+		registry.RegisterSingleton<AnacondaFileResolver>();
 		registry.RegisterSingleton<AnacondaAutoResolver>();
 		registry.RegisterInstance(new AnacondaDistributionOptions
 		{
