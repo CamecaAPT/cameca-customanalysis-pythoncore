@@ -13,7 +13,7 @@ namespace Cameca.CustomAnalysis.PythonCore;
 
 public class PythonOptions : BindableBase
 {
-	[Display(Name = "Try Auto-Locate Python")]
+	[Display(Name = "Try Auto-Detect Python")]
 	public DelegateCommand AutoLocatePythonCommand { get; }
 
 	private string? pythonDll;
