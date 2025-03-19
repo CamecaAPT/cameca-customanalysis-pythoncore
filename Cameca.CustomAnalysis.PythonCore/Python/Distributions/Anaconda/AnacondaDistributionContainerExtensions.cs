@@ -26,12 +26,6 @@ public static class AnacondaDistributionContainerExtensions
 		// All distributions should call this for common service registration
 		registry.RegisterPythonCore();
 
-		// Expect an ILogger. Register a NullLogger if not registered in calling application
-		if (!registry.IsRegistered<ILogger>())
-		{
-			registry.Register(typeof(ILogger<>), typeof(NullLogger<>));
-		}
-
 		// Allow multiple registrations only for different environments
 		registry.RegisterDialogWindow<AnacondaNotFoundDialogWindow>(nameof(AnacondaNotFoundDialogWindow));
 		registry.RegisterDialog<AnacondaNotFoundDialogView, AnacondaNotFoundDialogViewModel>();
