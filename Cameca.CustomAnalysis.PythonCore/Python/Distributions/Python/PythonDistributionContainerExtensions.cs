@@ -14,12 +14,6 @@ public static class PythonDistributionContainerExtensions
 		// All distributions should call this for common service registration
 		registry.RegisterPythonCore();
 
-		// Expect an ILogger. Register a NullLogger if not registered in calling application
-		if (!registry.IsRegistered<ILogger>())
-		{
-			registry.Register(typeof(ILogger<>), typeof(NullLogger<>));
-		}
-
 		registry.RegisterSingleton<IPyDistribution, PythonDistribution>(nameof(PythonDistribution));
 		registry.RegisterDialog<PythonLocatorDialogView, PythonLocatorDialogViewModel>("PythonLocatorDialog");
 		registry.RegisterDialog<PythonVenvDialogView, PythonVenvDialogViewModel>("PythonVenvDialog");
