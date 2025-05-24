@@ -1,4 +1,5 @@
 ﻿using Cameca.CustomAnalysis.Interface;
+using Cameca.CustomAnalysis.Utilities;
 using Prism.Ioc;
 using Python.Runtime;
 using System;
@@ -24,15 +25,18 @@ public class APSuiteContextProvider : IPyObjectProvider
 	private readonly Guid instanceId;
 	private readonly IGrid3DData? gridData;
 	private readonly IGrid3DParameters? gridParams;
+	private readonly IResources resources;
 
 	public APSuiteContextProvider(
 		IIonData ionData,
 		IContainerProvider containerProvider,
-		Guid instanceId)
+		Guid instanceId,
+		IResources resources)
 	{
 		this.ionData = ionData;
 		this.containerProvider = containerProvider;
 		this.instanceId = instanceId;
+		this.resources = resources;
 		this.ionDisplayInfo = containerProvider.Resolve<IIonDisplayInfoProvider>().Resolve(instanceId);
 		// Only allow fetching and setting ranges from root level - no spatial ranging support for extensions
 		var nodeInfoProvider = containerProvider.Resolve<INodeInfoProvider>();
@@ -84,7 +88,8 @@ public class APSuiteContextProvider : IPyObjectProvider
 			"APSuiteContext",
 			ionData.ToPython(),
 			services,
-			instanceId.ToPython());
+			instanceId.ToPython(),
+			resources.ToPython());
 		return context;
 	}
 
