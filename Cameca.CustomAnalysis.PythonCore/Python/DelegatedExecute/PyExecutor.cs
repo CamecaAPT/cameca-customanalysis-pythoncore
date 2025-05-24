@@ -34,6 +34,7 @@ internal class PyExecutor : IPyExecutor
 		long pythonThreadId = long.MinValue;
 
 		var task = Task.Run(TaskRunner, token);
+		Exception? exception = null;
 		// Inner function that will be run on a separate task for cancellation support
 		void TaskRunner()
 		{
@@ -68,6 +69,10 @@ internal class PyExecutor : IPyExecutor
 						return;
 					}
 				}
+			}
+			catch (Exception ex)
+			{
+				exception = ex;
 			}
 			finally
 			{
@@ -104,6 +109,10 @@ internal class PyExecutor : IPyExecutor
 		// and only relevant after cancellation already has been triggered.
 		// ReSharper disable once MethodSupportsCancellation
 		var finalizeTask = await Task.WhenAny(pollTask, Task.Delay(cancellationTimeout));
+		if (exception is not null)
+		{
+			throw exception;
+		}
 		await finalizeTask;
 	}
 }
