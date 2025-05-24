@@ -72,14 +72,14 @@ class APSuiteContext:
     
     @property
     def colors(self) -> list[Color]:
-        ranges = self._services["IMassSpectrumRangeManager"].GetRanges()
+        ion_infos = [ion_info for ion_info in self._ion_data.Ions]
         ion_display_info = self._services["IIonDisplayInfo"]
         if ion_display_info is None:
             return [
                 FALLBACK_COLOR_DEFINITIONS[i % len(FALLBACK_COLOR_DEFINITIONS)]
-                for i in range(len(ranges))
+                for i in range(len(ion_infos))
             ]
-        return [get_color(ion_display_info, x.Key) for x in ranges]
+        return [get_color(ion_display_info, x) for x in ion_infos]
     
     @property
     def ions(self) -> list[IonInfo]:
