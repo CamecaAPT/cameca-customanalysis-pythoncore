@@ -11,7 +11,6 @@ namespace Cameca.CustomAnalysis.PythonCore;
 public class APSuiteContextProvider : IPyObjectProvider
 {
 	private readonly IIonData ionData;
-	private readonly INodeInfo? nodeInfo;
 	private readonly IIonDisplayInfo? ionDisplayInfo;
 	private readonly IMassSpectrumRangeManager? rangeManager;
 	private readonly INodeProperties? properties;
@@ -40,7 +39,6 @@ public class APSuiteContextProvider : IPyObjectProvider
 		this.ionDisplayInfo = containerProvider.Resolve<IIonDisplayInfoProvider>().Resolve(instanceId);
 		// Only allow fetching and setting ranges from root level - no spatial ranging support for extensions
 		var nodeInfoProvider = containerProvider.Resolve<INodeInfoProvider>();
-		this.nodeInfo = nodeInfoProvider.Resolve(instanceId);
 		var rootNodeId = GetRootNodeId(nodeInfoProvider, instanceId);
 		this.rangeManager = containerProvider.Resolve<IMassSpectrumRangeManagerProvider>().Resolve(rootNodeId);
 		var gridNodeId = IterateNodeContainers(nodeInfoProvider, rootNodeId)
@@ -70,7 +68,6 @@ public class APSuiteContextProvider : IPyObjectProvider
 
 		var services = new PyDict();
 		services["IIonDisplayInfo"] = ionDisplayInfo.ToPython();
-		services["INodeInfo"] = nodeInfo.ToPython();
 		services["IMassSpectrumRangeManager"] = rangeManager.ToPython();
 		services["INodeProperties"] = properties.ToPython();
 		services["INodeElementDataSet"] = nodeElementDataSet.ToPython();
