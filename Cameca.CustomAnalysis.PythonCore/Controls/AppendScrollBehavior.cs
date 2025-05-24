@@ -1,5 +1,8 @@
-﻿namespace Cameca.CustomAnalysis.PythonCore;
+﻿using System;
 
+namespace Cameca.CustomAnalysis.PythonCore;
+
+[Obsolete("Use new version of this control now found in Cameca.CustomAnalysis.Utilities. This version will no longer be updated.")]
 public enum AppendScrollBehavior
 {
 	/// <summary>
