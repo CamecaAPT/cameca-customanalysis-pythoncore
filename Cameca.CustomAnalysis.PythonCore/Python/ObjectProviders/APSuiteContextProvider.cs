@@ -40,7 +40,7 @@ public class APSuiteContextProvider : IPyObjectProvider
 		// Only allow fetching and setting ranges from root level - no spatial ranging support for extensions
 		var nodeInfoProvider = containerProvider.Resolve<INodeInfoProvider>();
 		var rootNodeId = GetRootNodeId(nodeInfoProvider, instanceId);
-		this.rangeManager = containerProvider.Resolve<IMassSpectrumRangeManagerProvider>().Resolve(rootNodeId);
+		this.rangeManager = containerProvider.Resolve<IMassSpectrumRangeManagerProvider>().Resolve(instanceId);
 		var gridNodeId = GetGridNodeId(nodeInfoProvider, instanceId);
 		var gridNodeDataProvider = gridNodeId.HasValue
 			? containerProvider.Resolve<INodeDataProvider>().Resolve(gridNodeId.Value)
