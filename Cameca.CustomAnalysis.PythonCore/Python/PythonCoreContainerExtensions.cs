@@ -11,6 +11,10 @@ public static class PythonCoreContainerExtensions
 			registry.RegisterSingleton<IPythonManager, PythonManager>();
 			registry.RegisterSingleton<IPyExecutor, PyExecutor>();
 		}
+		if (!registry.IsRegistered<PythonService>())
+		{
+			registry.Register<PythonService>();
+		}
 		return registry;
 	}
 }
