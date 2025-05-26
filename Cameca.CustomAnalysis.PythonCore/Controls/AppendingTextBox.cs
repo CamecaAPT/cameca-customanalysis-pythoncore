@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Windows;
@@ -6,6 +7,7 @@ using System.Windows.Controls;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
+[Obsolete("Use new version of this control now found in Cameca.CustomAnalysis.Utilities. This version will no longer be updated.")]
 internal class AppendingTextBox : TextBox
 {
 	public static readonly DependencyProperty AppendScrollBehaviorProperty = DependencyProperty.Register(

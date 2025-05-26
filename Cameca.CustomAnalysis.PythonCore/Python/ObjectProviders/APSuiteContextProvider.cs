@@ -1,4 +1,5 @@
 ﻿using Cameca.CustomAnalysis.Interface;
+using Cameca.CustomAnalysis.Utilities;
 using Prism.Ioc;
 using Python.Runtime;
 using System;
@@ -10,7 +11,6 @@ namespace Cameca.CustomAnalysis.PythonCore;
 public class APSuiteContextProvider : IPyObjectProvider
 {
 	private readonly IIonData ionData;
-	private readonly INodeInfo? nodeInfo;
 	private readonly IIonDisplayInfo? ionDisplayInfo;
 	private readonly IMassSpectrumRangeManager? rangeManager;
 	private readonly INodeProperties? properties;
@@ -24,23 +24,24 @@ public class APSuiteContextProvider : IPyObjectProvider
 	private readonly Guid instanceId;
 	private readonly IGrid3DData? gridData;
 	private readonly IGrid3DParameters? gridParams;
+	private readonly IResources resources;
 
 	public APSuiteContextProvider(
 		IIonData ionData,
 		IContainerProvider containerProvider,
-		Guid instanceId)
+		Guid instanceId,
+		IResources resources)
 	{
 		this.ionData = ionData;
 		this.containerProvider = containerProvider;
 		this.instanceId = instanceId;
+		this.resources = resources;
 		this.ionDisplayInfo = containerProvider.Resolve<IIonDisplayInfoProvider>().Resolve(instanceId);
 		// Only allow fetching and setting ranges from root level - no spatial ranging support for extensions
 		var nodeInfoProvider = containerProvider.Resolve<INodeInfoProvider>();
-		this.nodeInfo = nodeInfoProvider.Resolve(instanceId);
 		var rootNodeId = GetRootNodeId(nodeInfoProvider, instanceId);
-		this.rangeManager = containerProvider.Resolve<IMassSpectrumRangeManagerProvider>().Resolve(rootNodeId);
-		var gridNodeId = IterateNodeContainers(nodeInfoProvider, rootNodeId)
-			.FirstOrDefault(x => x.NodeInfo.TypeId == "GridNode")?.NodeId;
+		this.rangeManager = containerProvider.Resolve<IMassSpectrumRangeManagerProvider>().Resolve(instanceId);
+		var gridNodeId = GetGridNodeId(nodeInfoProvider, instanceId);
 		var gridNodeDataProvider = gridNodeId.HasValue
 			? containerProvider.Resolve<INodeDataProvider>().Resolve(gridNodeId.Value)
 			: null;
@@ -53,7 +54,33 @@ public class APSuiteContextProvider : IPyObjectProvider
 		this.experimentInfoResolver = containerProvider.Resolve<IExperimentInfoProvider>().Resolve(instanceId);
 		this.chart3d = containerProvider.Resolve<IMainChartProvider>().Resolve(instanceId);
 		this.renderDataFactory = containerProvider.Resolve<IRenderDataFactory>();
-	}	
+	}
+
+	// If the direct parent of this node instance is a cube shaped ROI that contains a Grid3D node, return the Grid3D node ID. Else return null.
+	private static Guid? GetGridNodeId(INodeInfoProvider nodeInfoProvider, Guid instanceId)
+	{
+		var parentId = nodeInfoProvider.Resolve(instanceId)?.Parent;
+		if (!parentId.HasValue)
+		{
+			return null;
+		}
+		if (nodeInfoProvider.Resolve(parentId.Value) is not IGeometricRoiNodeInfo geometricRoiNodeInfo)
+		{
+			return null;
+		}
+		if (geometricRoiNodeInfo.Region.Shape != Shape.Cube)
+		{
+			return null;
+		}
+		foreach (var childId in geometricRoiNodeInfo.Children)
+		{
+			if (nodeInfoProvider.Resolve(childId) is { TypeId: "GridNode" })
+			{
+				return childId;
+			}
+		}
+		return null;
+	}
 
 	public PyObject GetPyObject(PyModule scope)
 	{
@@ -66,7 +93,6 @@ public class APSuiteContextProvider : IPyObjectProvider
 
 		var services = new PyDict();
 		services["IIonDisplayInfo"] = ionDisplayInfo.ToPython();
-		services["INodeInfo"] = nodeInfo.ToPython();
 		services["IMassSpectrumRangeManager"] = rangeManager.ToPython();
 		services["INodeProperties"] = properties.ToPython();
 		services["INodeElementDataSet"] = nodeElementDataSet.ToPython();
@@ -84,7 +110,8 @@ public class APSuiteContextProvider : IPyObjectProvider
 			"APSuiteContext",
 			ionData.ToPython(),
 			services,
-			instanceId.ToPython());
+			instanceId.ToPython(),
+			resources.ToPython());
 		return context;
 	}
 

@@ -3,7 +3,7 @@ using Python.Runtime;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
-internal class PrintPyExceptionExecutableWrapper<T> : IPyExecutable where T : IPyExecutable
+public class PrintPyExceptionExecutableWrapper<T> : IPyExecutable where T : IPyExecutable
 {
 	private readonly T _inner;
 
