@@ -79,4 +79,9 @@ internal class PythonLocatorDialogView : UserControl
 				.SetGridRow(1),
 		}
 	};
+
+	public override string ToString()
+	{
+		return typeof(PythonVenvDialogView).AssemblyQualifiedName ?? base.ToString();
+	}
 }

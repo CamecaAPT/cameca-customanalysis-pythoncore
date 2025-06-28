@@ -149,4 +149,9 @@ internal class PythonVenvDialogView : UserControl
 			}
 		};
 	}
+
+	public override string ToString()
+	{
+		return typeof(PythonVenvDialogView).AssemblyQualifiedName ?? base.ToString();
+	}
 }
