@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System;
+using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
@@ -80,8 +81,9 @@ internal class PythonLocatorDialogView : UserControl
 		}
 	};
 
+	static readonly string staticId = Guid.NewGuid().ToString();
 	public override string ToString()
 	{
-		return typeof(PythonVenvDialogView).AssemblyQualifiedName ?? base.ToString();
+		return staticId;
 	}
 }
