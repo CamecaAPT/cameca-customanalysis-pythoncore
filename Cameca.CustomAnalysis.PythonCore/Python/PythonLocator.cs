@@ -15,11 +15,13 @@ namespace Cameca.CustomAnalysis.PythonCore;
 
 public class PythonInstallation
 {
-	public string Path { get; }
-	public string Version { get; }
-	public string Type { get; }
+	public string Path { get; init; } = "";
+	public string Version { get; init; } = "";
+	public string Type { get; init; } = "";
 	[Display(AutoGenerateField = false)]
-	public bool VirtualEnvironment { get; }
+	public bool VirtualEnvironment { get; init; } = false;
+
+	public PythonInstallation() { }
 
 	public PythonInstallation(string path, string version, string type, bool virtualEnvironment = false)
 	{
