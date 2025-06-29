@@ -179,7 +179,7 @@ public class PythonOptions : BindableBase
 
 	private void AutoLocatePython()
 	{
-		using var _ = AssemblyLoadContext.EnterContextualReflection(Assembly.GetExecutingAssembly());
+		using var _ = AssemblyLoadContext.EnterContextualReflection(Assembly.GetCallingAssembly());
 		var installations = PythonLocator.FindPythonInstallations().ToList();
 
 		var dialogService = ContainerLocator.Container.Resolve<IDialogService>();
