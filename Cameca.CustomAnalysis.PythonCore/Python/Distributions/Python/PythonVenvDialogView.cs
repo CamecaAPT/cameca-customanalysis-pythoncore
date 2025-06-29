@@ -14,9 +14,9 @@ using Prism.Services.Dialogs;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
-internal class PythonVenvDialogView2 : UserControl
+internal class PythonVenvDialogView : UserControl
 {
-	public PythonVenvDialogView2()
+	public PythonVenvDialogView()
 	{
 		Resources = BuildResources();
 		Dialog.SetWindowStyle(this, CreateWindowStyle());
