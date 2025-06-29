@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
-using Prism.Ioc;
-using Prism.Services.Dialogs;
+﻿using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Text.Json;
@@ -21,7 +19,6 @@ internal static class PythonDialogExtensions
 			{ "installations", serialized }
 		};
 		System.Diagnostics.Debug.WriteLine(PythonLocatorDialogKey);
-		ContainerLocator.Container.Resolve<ILogger>()?.LogWarning(PythonLocatorDialogKey);
 		System.Diagnostics.Debug.WriteLine(PythonLocatorDialogKey);
 		System.Console.WriteLine(PythonLocatorDialogKey);
 		dialogService.ShowDialog(PythonLocatorDialogKey, dialogParams, callback);
