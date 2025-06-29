@@ -19,7 +19,7 @@ internal class PythonLocatorDialogView2 : UserControl
 	{
 		Setters =
 		{
-			new Setter(Window.TitleProperty, new Binding(nameof(PythonLocatorDialogViewModel.Title))),
+			new Setter(Window.TitleProperty, new Binding(nameof(PythonLocatorDialogViewModel2.Title))),
 			new Setter(Window.ResizeModeProperty, ResizeMode.NoResize),
 			new Setter(Window.ShowInTaskbarProperty, false),
 			new Setter(Window.SizeToContentProperty, SizeToContent.WidthAndHeight),
@@ -43,8 +43,8 @@ internal class PythonLocatorDialogView2 : UserControl
 					SelectionMode = DataGridSelectionMode.Single,
 					SelectionUnit = DataGridSelectionUnit.FullRow,
 				}
-				.SetBindingEx(ItemsControl.ItemsSourceProperty, nameof(PythonLocatorDialogViewModel.PythonInstances))
-				.SetBindingEx(Selector.SelectedItemProperty, nameof(PythonLocatorDialogViewModel.SelectedInstallation))
+				.SetBindingEx(ItemsControl.ItemsSourceProperty, nameof(PythonLocatorDialogViewModel2.PythonInstances))
+				.SetBindingEx(Selector.SelectedItemProperty, nameof(PythonLocatorDialogViewModel2.SelectedInstallation))
 				.SetGridRow(0),
 			new UniformGrid
 				{
@@ -68,12 +68,12 @@ internal class PythonLocatorDialogView2 : UserControl
 							{
 								Content = "Ok",
 							}
-							.SetBindingEx(ButtonBase.CommandProperty, nameof(PythonLocatorDialogViewModel.OkCommand)),
+							.SetBindingEx(ButtonBase.CommandProperty, nameof(PythonLocatorDialogViewModel2.OkCommand)),
 						new Button
 							{
 								Content = "Cancel",
 							}
-							.SetBindingEx(ButtonBase.CommandProperty, nameof(PythonLocatorDialogViewModel.CancelCommand)),
+							.SetBindingEx(ButtonBase.CommandProperty, nameof(PythonLocatorDialogViewModel2.CancelCommand)),
 					}
 				}
 				.SetGridRow(1),

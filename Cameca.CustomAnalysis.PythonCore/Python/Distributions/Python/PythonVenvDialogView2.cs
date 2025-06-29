@@ -33,7 +33,7 @@ internal class PythonVenvDialogView2 : UserControl
 	{
 		Setters =
 		{
-			new Setter(Window.TitleProperty, new Binding(nameof(PythonVenvDialogViewModel.Title))),
+			new Setter(Window.TitleProperty, new Binding(nameof(PythonVenvDialogViewModel2.Title))),
 			new Setter(Window.ResizeModeProperty, ResizeMode.NoResize),
 			new Setter(Window.ShowInTaskbarProperty, false),
 			new Setter(Window.SizeToContentProperty, SizeToContent.WidthAndHeight),
@@ -84,7 +84,7 @@ internal class PythonVenvDialogView2 : UserControl
 					{
 						Style = (Style)gridResources["TextBoxStyle"],
 					}
-					.SetBindingEx(TextBox.TextProperty, new Binding(nameof(PythonVenvDialogViewModel.CmdStatementText)) { Mode = BindingMode.OneWay })
+					.SetBindingEx(TextBox.TextProperty, new Binding(nameof(PythonVenvDialogViewModel2.CmdStatementText)) { Mode = BindingMode.OneWay })
 					.SetGridRow(0),
 				new UniformGrid
 					{
@@ -96,17 +96,17 @@ internal class PythonVenvDialogView2 : UserControl
 							{
 								Content = "Create",
 							}
-							.SetBindingEx(ButtonBase.CommandProperty, nameof(PythonVenvDialogViewModel.RunCommand)),
+							.SetBindingEx(ButtonBase.CommandProperty, nameof(PythonVenvDialogViewModel2.RunCommand)),
 							new Button
 							{
 								Content = "Delete",
 							}
-							.SetBindingEx(ButtonBase.CommandProperty, nameof(PythonVenvDialogViewModel.DeleteCommand)),
+							.SetBindingEx(ButtonBase.CommandProperty, nameof(PythonVenvDialogViewModel2.DeleteCommand)),
 							new Button
 							{
 								Content = "Cancel",
 							}
-							.SetBindingEx(ButtonBase.CommandProperty, nameof(PythonVenvDialogViewModel.RunCancelCommand)),
+							.SetBindingEx(ButtonBase.CommandProperty, nameof(PythonVenvDialogViewModel2.RunCancelCommand)),
 						}
 					}
 					.SetGridRow(1),
@@ -120,7 +120,7 @@ internal class PythonVenvDialogView2 : UserControl
 						AppendScrollBehavior = AppendScrollBehavior.FollowBottom,
 						Style = (Style)gridResources["TextBoxStyle"],
 					}
-					.SetBindingEx(AppendingTextBox.ItemsSourceProperty, nameof(PythonVenvDialogViewModel.TextContent))
+					.SetBindingEx(AppendingTextBox.ItemsSourceProperty, nameof(PythonVenvDialogViewModel2.TextContent))
 					.SetGridRow(3),
 				new UniformGrid
 					{
@@ -133,8 +133,8 @@ internal class PythonVenvDialogView2 : UserControl
 								{
 									Content = "Ok",
 								}
-								.SetBindingEx(ButtonBase.CommandProperty, nameof(PythonVenvDialogViewModel.OkCommand))
-								.SetBindingEx(IsEnabledProperty, new Binding($"{nameof(PythonVenvDialogViewModel.RunCommand)}.{nameof(IAsyncRelayCommand.IsRunning)}")
+								.SetBindingEx(ButtonBase.CommandProperty, nameof(PythonVenvDialogViewModel2.OkCommand))
+								.SetBindingEx(IsEnabledProperty, new Binding($"{nameof(PythonVenvDialogViewModel2.RunCommand)}.{nameof(IAsyncRelayCommand.IsRunning)}")
 								{
 									Converter = (IValueConverter)Resources["InvertBooleanConverter"],
 								}),
@@ -142,7 +142,7 @@ internal class PythonVenvDialogView2 : UserControl
 								{
 									Content = "Cancel",
 								}
-								.SetBindingEx(ButtonBase.CommandProperty, nameof(PythonVenvDialogViewModel.CancelCommand)),
+								.SetBindingEx(ButtonBase.CommandProperty, nameof(PythonVenvDialogViewModel2.CancelCommand)),
 						}
 					}
 					.SetGridRow(4),

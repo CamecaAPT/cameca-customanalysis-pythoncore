@@ -15,8 +15,8 @@ public static class PythonDistributionContainerExtensions
 		registry.RegisterPythonCore();
 
 		registry.RegisterSingleton<IPyDistribution, PythonDistribution>(nameof(PythonDistribution));
-		registry.RegisterDialog<PythonLocatorDialogView2, PythonLocatorDialogViewModel>(PythonDialogExtensions.PythonLocatorDialogKey);
-		registry.RegisterDialog<PythonVenvDialogView2, PythonVenvDialogViewModel>(PythonDialogExtensions.PythonVenvDialogKey);
+		registry.RegisterDialog<PythonLocatorDialogView2, PythonLocatorDialogViewModel2>(PythonDialogExtensions.PythonLocatorDialogKey);
+		registry.RegisterDialog<PythonVenvDialogView2, PythonVenvDialogViewModel2>(PythonDialogExtensions.PythonVenvDialogKey);
 
 		return registry;
 	}

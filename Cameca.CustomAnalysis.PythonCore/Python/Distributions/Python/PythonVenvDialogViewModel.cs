@@ -14,7 +14,7 @@ using System.Windows;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
-internal partial class PythonVenvDialogViewModel : ObservableObject, IDialogAware
+internal partial class PythonVenvDialogViewModel2 : ObservableObject, IDialogAware
 {
 	private readonly object _outputItemsLock = new();
 	private PythonCreateVenvResult createResult = PythonCreateVenvResult.None;
@@ -30,7 +30,7 @@ internal partial class PythonVenvDialogViewModel : ObservableObject, IDialogAwar
 
 	public event Action<IDialogResult>? RequestClose;
 
-	public PythonVenvDialogViewModel()
+	public PythonVenvDialogViewModel2()
 	{
 		CmdStatements.CollectionChanged += CmdStatements_CollectionChanged;
 	}

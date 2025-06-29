@@ -8,7 +8,7 @@ using System.Text.Json;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
-internal class PythonLocatorDialogViewModel : BindableBase, IDialogAware
+internal class PythonLocatorDialogViewModel2 : BindableBase, IDialogAware
 {
 	public string Title { get; } = "Auto-Detect Python Installation";
 
@@ -24,7 +24,7 @@ internal class PythonLocatorDialogViewModel : BindableBase, IDialogAware
 	public DelegateCommand OkCommand { get; }
 	public DelegateCommand CancelCommand { get; }
 
-	public PythonLocatorDialogViewModel()
+	public PythonLocatorDialogViewModel2()
 	{
 		OkCommand = new DelegateCommand(() => CloseDialog(ButtonResult.OK), () => SelectedInstallation is not null);
 		CancelCommand = new DelegateCommand(() => CloseDialog(ButtonResult.Cancel));
