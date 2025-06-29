@@ -1,7 +1,6 @@
 ﻿using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
-using System.Text.Json;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
@@ -9,18 +8,14 @@ internal static class PythonDialogExtensions
 {
 	// Not nullable: is not a generic type parameter
 	internal static readonly string PythonLocatorDialogKey = typeof(PythonLocatorDialogViewModel2).AssemblyQualifiedName!;
-	internal static readonly string PythonVenvDialogKey = typeof(PythonVenvDialogViewModel2).AssemblyQualifiedName!;
+	internal static readonly string PythonVenvDialogKey = typeof(PythonVenvDialogViewModel).AssemblyQualifiedName!;
 
 	public static void ShowPythonLocatorDialog(this IDialogService dialogService, List<PythonInstallation>? installations, Action<IDialogResult> callback)
 	{
-		string serialized = JsonSerializer.Serialize(installations);
 		var dialogParams = new DialogParameters
 		{
-			{ "installations", serialized }
+			{ "installations", installations }
 		};
-		System.Diagnostics.Debug.WriteLine(PythonLocatorDialogKey);
-		System.Diagnostics.Debug.WriteLine(PythonLocatorDialogKey);
-		System.Console.WriteLine(PythonLocatorDialogKey);
 		dialogService.ShowDialog(PythonLocatorDialogKey, dialogParams, callback);
 	}
 

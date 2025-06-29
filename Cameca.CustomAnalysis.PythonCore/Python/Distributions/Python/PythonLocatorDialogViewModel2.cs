@@ -4,7 +4,6 @@ using Prism.Services.Dialogs;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Text.Json;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
@@ -39,10 +38,7 @@ internal class PythonLocatorDialogViewModel2 : BindableBase, IDialogAware
 	public void OnDialogOpened(IDialogParameters parameters)
 	{
 		PythonInstances.Clear();
-		string serialized = parameters.GetValue<string>("installations");
-		var installations = JsonSerializer.Deserialize<List<PythonInstallation>>(serialized);
-		if (installations is null) { throw new InvalidOperationException($"Could not deserialized installations: {serialized}"); }
-		PythonInstances.AddRange(installations);
+		PythonInstances.AddRange(parameters.GetValue<List<PythonInstallation>>("installations"));
 	}
 
 	private void CloseDialog(ButtonResult result)

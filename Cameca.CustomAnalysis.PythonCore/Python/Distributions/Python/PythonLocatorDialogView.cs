@@ -6,9 +6,9 @@ using Prism.Services.Dialogs;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
-internal class PythonLocatorDialogView2 : UserControl
+internal class PythonLocatorDialogView : UserControl
 {
-	public PythonLocatorDialogView2()
+	public PythonLocatorDialogView()
 	{
 		Dialog.SetWindowStyle(this, CreateWindowStyle());
 		Dialog.SetWindowStartupLocation(this, WindowStartupLocation.CenterScreen);
