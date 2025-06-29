@@ -8,7 +8,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Linq;
-using System.Runtime.Loader;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
@@ -179,7 +178,6 @@ public class PythonOptions : BindableBase
 
 	private void AutoLocatePython()
 	{
-		using var _ = AssemblyLoadContext.EnterContextualReflection(Assembly.GetCallingAssembly());
 		var installations = PythonLocator.FindPythonInstallations().ToList();
 
 		var dialogService = ContainerLocator.Container.Resolve<IDialogService>();
