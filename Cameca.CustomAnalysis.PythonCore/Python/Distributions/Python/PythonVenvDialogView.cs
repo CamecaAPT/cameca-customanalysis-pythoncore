@@ -149,10 +149,4 @@ internal class PythonVenvDialogView : UserControl
 			}
 		};
 	}
-
-	static readonly string staticId = Guid.NewGuid().ToString();
-	public override string ToString()
-	{
-		return staticId;
-	}
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Windows;
+﻿using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
@@ -33,7 +32,6 @@ internal class PythonLocatorDialogView : UserControl
 		RowDefinitions =
 		{
 			new RowDefinition { Height = new GridLength(1d, GridUnitType.Star) },
-			new RowDefinition { Height = GridLength.Auto, },
 			new RowDefinition { Height = GridLength.Auto, },
 		},
 		Children =
@@ -79,17 +77,6 @@ internal class PythonLocatorDialogView : UserControl
 					}
 				}
 				.SetGridRow(1),
-			new TextBox
-			{
-				Text = staticId,
-			}
-			.SetGridRow(2),
 		}
 	};
-
-	static readonly string staticId = Guid.NewGuid().ToString();
-	public override string ToString()
-	{
-		return staticId;
-	}
 }
