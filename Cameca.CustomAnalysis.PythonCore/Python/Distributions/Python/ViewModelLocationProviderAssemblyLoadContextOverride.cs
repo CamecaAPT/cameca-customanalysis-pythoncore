@@ -1,7 +1,9 @@
-﻿using Prism.Mvvm;
+﻿using Prism.Ioc;
+using Prism.Mvvm;
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
@@ -35,11 +37,17 @@ internal static class ViewModelLocationProviderAssemblyLoadContextOverride
 		{
 			if (view.GetType().ToString() == typeof(PythonLocatorDialogView2).ToString())
 			{
-				return Activator.CreateInstance(typeof(PythonLocatorDialogViewModel))!;
+				using (AssemblyLoadContext.EnterContextualReflection(Assembly.GetCallingAssembly()))
+				{
+					return ContainerLocator.Container.Resolve<PythonLocatorDialogViewModel>();
+				}
 			}
 			else if (view.GetType().ToString() == typeof(PythonVenvDialogView2).ToString())
 			{
-				return Activator.CreateInstance(typeof(PythonVenvDialogViewModel))!;
+				using (AssemblyLoadContext.EnterContextualReflection(Assembly.GetCallingAssembly()))
+				{
+					return ContainerLocator.Container.Resolve<PythonVenvDialogViewModel>();
+				}
 			}
 			return defaultViewModelFactoryWithViewParameter is not null
 					? defaultViewModelFactoryWithViewParameter(view, viewModelType)
