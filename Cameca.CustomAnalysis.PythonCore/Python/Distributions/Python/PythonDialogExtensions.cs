@@ -7,7 +7,7 @@ namespace Cameca.CustomAnalysis.PythonCore;
 internal static class PythonDialogExtensions
 {
 	// Not nullable: is not a generic type parameter
-	internal static readonly string PythonLocatorDialogKey = typeof(PythonLocatorDialogViewModel2).AssemblyQualifiedName!;
+	internal static readonly string PythonLocatorDialogKey = typeof(PythonLocatorDialogViewModel).AssemblyQualifiedName!;
 	internal static readonly string PythonVenvDialogKey = typeof(PythonVenvDialogViewModel).AssemblyQualifiedName!;
 
 	public static void ShowPythonLocatorDialog(this IDialogService dialogService, List<PythonInstallation>? installations, Action<IDialogResult> callback)

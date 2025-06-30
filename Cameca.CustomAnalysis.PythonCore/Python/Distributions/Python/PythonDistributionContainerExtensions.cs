@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Prism.Ioc;
 using Cameca.CustomAnalysis.Interface;
 using System.Reflection;
+using Cameca.CustomAnalysis.PythonCore.Python.Distributions.Python;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
@@ -11,11 +12,13 @@ public static class PythonDistributionContainerExtensions
 	public static IContainerRegistry RegisterPythonDistribution(
 		this IContainerRegistry registry)
 	{
+		ViewModelLocationProviderAssemblyLoadContextOverride.Register();
+
 		// All distributions should call this for common service registration
 		registry.RegisterPythonCore();
 
 		registry.RegisterSingleton<IPyDistribution, PythonDistribution>(nameof(PythonDistribution));
-		registry.RegisterDialog<PythonLocatorDialogView2, PythonLocatorDialogViewModel2>(PythonDialogExtensions.PythonLocatorDialogKey);
+		registry.RegisterDialog<PythonLocatorDialogView, PythonLocatorDialogViewModel>(PythonDialogExtensions.PythonLocatorDialogKey);
 		registry.RegisterDialog<PythonVenvDialogView, PythonVenvDialogViewModel>(PythonDialogExtensions.PythonVenvDialogKey);
 
 		return registry;
