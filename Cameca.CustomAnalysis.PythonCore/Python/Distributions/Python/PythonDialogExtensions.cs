@@ -16,7 +16,8 @@ internal static class PythonDialogExtensions
 		{
 			{ "installations", installations }
 		};
-		dialogService.ShowDialog(PythonLocatorDialogKey, dialogParams, callback);
+		InternalDialogService.ShowDialog<PythonLocatorDialogView2, PythonLocatorDialogViewModel>(dialogParams, callback);
+		//dialogService.ShowDialog(PythonLocatorDialogKey, dialogParams, callback);
 	}
 
 	public static void ShowPythonVenvDialog(this IDialogService dialogService, string venvPath, string pythonExe, string extensionDirectory, Action<IDialogResult> callback)
@@ -27,6 +28,7 @@ internal static class PythonDialogExtensions
 			{ "pythonExe", pythonExe },
 			{ "extensionDirectory", extensionDirectory },
 		};
-		dialogService.ShowDialog(PythonVenvDialogKey, dialogParams, callback);
+		InternalDialogService.ShowDialog<PythonVenvDialogView2, PythonVenvDialogViewModel>(dialogParams, callback);
+		//dialogService.ShowDialog(PythonVenvDialogKey, dialogParams, callback);
 	}
 }
