@@ -1,9 +1,6 @@
-﻿using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Logging;
-using Prism.Ioc;
+﻿using Prism.Ioc;
 using Cameca.CustomAnalysis.Interface;
 using System.Reflection;
-using Cameca.CustomAnalysis.PythonCore.Python.Distributions.Python;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 

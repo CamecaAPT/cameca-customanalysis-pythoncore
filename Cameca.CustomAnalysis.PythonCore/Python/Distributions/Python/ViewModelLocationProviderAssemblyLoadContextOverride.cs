@@ -2,8 +2,9 @@
 using System;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.Loader;
 
-namespace Cameca.CustomAnalysis.PythonCore.Python.Distributions.Python;
+namespace Cameca.CustomAnalysis.PythonCore;
 
 internal static class ViewModelLocationProviderAssemblyLoadContextOverride
 {
@@ -35,11 +36,11 @@ internal static class ViewModelLocationProviderAssemblyLoadContextOverride
 		{
 			if (view.GetType().ToString() == typeof(PythonLocatorDialogView2).ToString())
 			{
-				viewModelType = typeof(PythonLocatorDialogViewModel);
+				return Activator.CreateInstance(typeof(PythonLocatorDialogViewModel))!;
 			}
 			else if (view.GetType().ToString() == typeof(PythonVenvDialogView2).ToString())
 			{
-				viewModelType = typeof(PythonVenvDialogViewModel);
+				return Activator.CreateInstance(typeof(PythonVenvDialogViewModel))!;
 			}
 			return defaultViewModelFactoryWithViewParameter is not null
 					? defaultViewModelFactoryWithViewParameter(view, viewModelType)
