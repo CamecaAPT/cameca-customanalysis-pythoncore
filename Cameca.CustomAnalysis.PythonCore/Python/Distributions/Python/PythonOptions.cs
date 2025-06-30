@@ -1,13 +1,12 @@
 ﻿using Cameca.CustomAnalysis.Interface;
 using Prism.Commands;
 using Prism.Mvvm;
-using Prism.Services.Dialogs;
-using Prism.Ioc;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Linq;
+using Prism.Services.Dialogs;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
@@ -107,24 +106,23 @@ public class PythonOptions : BindableBase
 		}
 
 		var venvPath = Path.Join(extensionDirectory, "venv");
-		ContainerLocator.Container.Resolve<IDialogService>()
-			.ShowPythonVenvDialog(venvPath, PythonExe, extensionDirectory, (result) =>
+		Dialogs.ShowPythonVenvDialog(venvPath, PythonExe, extensionDirectory, (result) =>
+		{
+			switch (result.Parameters.GetValue<PythonCreateVenvResult>("createResult"))
 			{
-				switch (result.Parameters.GetValue<PythonCreateVenvResult>("createResult"))
-				{
-					case PythonCreateVenvResult.Created:
-						PythonVenvDir = venvPath;
-						break;
-					case PythonCreateVenvResult.Deleted:
-						if (PythonVenvDir == venvPath)
-						{
-							PythonVenvDir = null;
-						}
-						break;
-					default:
-						break;
-				}
-			});
+				case PythonCreateVenvResult.Created:
+					PythonVenvDir = venvPath;
+					break;
+				case PythonCreateVenvResult.Deleted:
+					if (PythonVenvDir == venvPath)
+					{
+						PythonVenvDir = null;
+					}
+					break;
+				default:
+					break;
+			}
+		});
 	}
 
 	private void AutoConfigure()
@@ -180,8 +178,7 @@ public class PythonOptions : BindableBase
 	{
 		var installations = PythonLocator.FindPythonInstallations().ToList();
 
-		var dialogService = ContainerLocator.Container.Resolve<IDialogService>();
-		dialogService.ShowPythonLocatorDialog(installations, (dialogResult) =>
+		Dialogs.ShowPythonLocatorDialog(installations, (dialogResult) =>
 		{
 			if (dialogResult.Result == ButtonResult.OK && dialogResult.Parameters.GetValue<PythonInstallation?>("selected") is { } selected)
 			{

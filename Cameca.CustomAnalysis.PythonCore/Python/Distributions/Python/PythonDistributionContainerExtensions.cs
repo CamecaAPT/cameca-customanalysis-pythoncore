@@ -9,14 +9,10 @@ public static class PythonDistributionContainerExtensions
 	public static IContainerRegistry RegisterPythonDistribution(
 		this IContainerRegistry registry)
 	{
-		ViewModelLocationProviderAssemblyLoadContextOverride.Register();
-
 		// All distributions should call this for common service registration
 		registry.RegisterPythonCore();
 
 		registry.RegisterSingleton<IPyDistribution, PythonDistribution>(nameof(PythonDistribution));
-		//registry.RegisterDialog<PythonLocatorDialogView2, PythonLocatorDialogViewModel>(PythonDialogExtensions.PythonLocatorDialogKey);
-		//registry.RegisterDialog<PythonVenvDialogView2, PythonVenvDialogViewModel>(PythonDialogExtensions.PythonVenvDialogKey);
 
 		return registry;
 	}
