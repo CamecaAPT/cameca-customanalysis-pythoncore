@@ -33,11 +33,11 @@ internal static class ViewModelLocationProviderAssemblyLoadContextOverride
 	{
 		return (object view, Type viewModelType) =>
 		{
-			if (view.GetType().ToString() == typeof(PythonLocatorDialogView).ToString())
+			if (view.GetType().ToString() == typeof(PythonLocatorDialogView2).ToString())
 			{
 				viewModelType = typeof(PythonLocatorDialogViewModel);
 			}
-			else if (view.GetType().ToString() == typeof(PythonVenvDialogView).ToString())
+			else if (view.GetType().ToString() == typeof(PythonVenvDialogView2).ToString())
 			{
 				viewModelType = typeof(PythonVenvDialogViewModel);
 			}
