@@ -7,6 +7,7 @@ using System.IO;
 using System.Reflection;
 using System.Linq;
 using Prism.Services.Dialogs;
+using System.Windows;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
@@ -178,28 +179,51 @@ public class PythonOptions : BindableBase
 	{
 		var installations = PythonLocator.FindPythonInstallations().ToList();
 
+		// If no installations located, prompt for download
+		if (!installations.Any())
+		{
+			MessageBox.Show(
+				"No installations of Python could be found. Install Python and try again.",
+				"No Python Found",
+				MessageBoxButton.OK,
+				MessageBoxImage.Warning);
+			return;
+		}
+
+		// If a single installation located, simply selected it. No need to force the user to select only item in dialog list.
+		if (installations.Count() == 1)
+		{
+			ApplyPythonInstallation(installations.Single());
+			return;
+		}
+
+		// With mutiple installation found, prompt the user to select which version to use
 		Dialogs.ShowPythonLocatorDialog(installations, (dialogResult) =>
 		{
 			if (dialogResult.Result == ButtonResult.OK && dialogResult.Parameters.GetValue<PythonInstallation?>("selected") is { } selected)
 			{
-				var location = new FileInfo(selected.Path).DirectoryName;
-				// Resolve best DLL
-				if (location is not null && PyPathTools.ResolvePythonDll(location) is { } dllPath)
-				{
-					PythonDll = dllPath;
-				}
-				// Resolve best exe
-				if (File.Exists(selected.Path))
-				{
-					PythonExe = selected.Path;
-				}
-				if (selected.VirtualEnvironment && new FileInfo(selected.Path).Directory is { } directoryInfo)
-				{
-					PythonVenvDir = directoryInfo.FullName;
-				}
+				ApplyPythonInstallation(selected);
 			}
 		});
+	}
 
+	private void ApplyPythonInstallation(PythonInstallation installation)
+	{
+		var location = new FileInfo(installation.Path).DirectoryName;
+		// Resolve best DLL
+		if (location is not null && PyPathTools.ResolvePythonDll(location) is { } dllPath)
+		{
+			PythonDll = dllPath;
+		}
+		// Resolve best exe
+		if (File.Exists(installation.Path))
+		{
+			PythonExe = installation.Path;
+		}
+		if (installation.VirtualEnvironment && new FileInfo(installation.Path).Directory is { } directoryInfo)
+		{
+			PythonVenvDir = directoryInfo.FullName;
+		}
 	}
 
 	private void OpenDirectory()
