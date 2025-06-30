@@ -35,18 +35,24 @@ internal static class ViewModelLocationProviderAssemblyLoadContextOverride
 	{
 		return (object view, Type viewModelType) =>
 		{
-			if (view.GetType().ToString() == typeof(PythonLocatorDialogView2).ToString())
+			Type viewType = view.GetType();
+			Assembly callingAssembly = Assembly.GetCallingAssembly();
+			// Check if view comes from the calling ALC
+			if (AssemblyLoadContext.GetLoadContext(viewType.Assembly) == AssemblyLoadContext.GetLoadContext(callingAssembly))
 			{
-				using (AssemblyLoadContext.EnterContextualReflection(Assembly.GetCallingAssembly()))
+				if (view.GetType().ToString() == typeof(PythonLocatorDialogView2).ToString())
 				{
-					return ContainerLocator.Container.Resolve<PythonLocatorDialogViewModel>();
+					using (AssemblyLoadContext.EnterContextualReflection(callingAssembly))
+					{
+						return ContainerLocator.Container.Resolve<PythonLocatorDialogViewModel>();
+					}
 				}
-			}
-			else if (view.GetType().ToString() == typeof(PythonVenvDialogView2).ToString())
-			{
-				using (AssemblyLoadContext.EnterContextualReflection(Assembly.GetCallingAssembly()))
+				else if (view.GetType().ToString() == typeof(PythonVenvDialogView2).ToString())
 				{
-					return ContainerLocator.Container.Resolve<PythonVenvDialogViewModel>();
+					using (AssemblyLoadContext.EnterContextualReflection(callingAssembly))
+					{
+						return ContainerLocator.Container.Resolve<PythonVenvDialogViewModel>();
+					}
 				}
 			}
 			return defaultViewModelFactoryWithViewParameter is not null
