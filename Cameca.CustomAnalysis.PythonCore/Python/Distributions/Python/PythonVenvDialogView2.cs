@@ -76,7 +76,6 @@ internal class PythonVenvDialogView2 : UserControl
 				new RowDefinition { Height = GridLength.Auto, },
 				new RowDefinition { Height = new GridLength(1d, GridUnitType.Star) },
 				new RowDefinition { Height = GridLength.Auto, },
-				new RowDefinition { Height = GridLength.Auto, },
 			},
 			Resources = gridResources,
 			Children =
@@ -147,10 +146,6 @@ internal class PythonVenvDialogView2 : UserControl
 						}
 					}
 					.SetGridRow(4),
-				new TextBlock
-				{
-					Text = "Version 1.9",
-				}.SetGridRow(5),
 			}
 		};
 	}

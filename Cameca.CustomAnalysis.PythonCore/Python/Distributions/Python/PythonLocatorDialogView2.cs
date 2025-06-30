@@ -33,7 +33,6 @@ internal class PythonLocatorDialogView2 : UserControl
 		{
 			new RowDefinition { Height = new GridLength(1d, GridUnitType.Star) },
 			new RowDefinition { Height = GridLength.Auto, },
-			new RowDefinition { Height = GridLength.Auto, },
 		},
 		Children =
 		{
@@ -78,10 +77,6 @@ internal class PythonLocatorDialogView2 : UserControl
 					}
 				}
 				.SetGridRow(1),
-				new TextBlock
-				{
-					Text = "Version 1.9",
-				}.SetGridRow(2),
 		}
 	};
 }
