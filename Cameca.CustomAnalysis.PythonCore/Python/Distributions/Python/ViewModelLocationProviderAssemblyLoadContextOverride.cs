@@ -37,6 +37,10 @@ internal static class ViewModelLocationProviderAssemblyLoadContextOverride
 			{
 				viewModelType = typeof(PythonLocatorDialogViewModel);
 			}
+			else if (view.GetType().ToString() == typeof(PythonVenvDialogView).ToString())
+			{
+				viewModelType = typeof(PythonVenvDialogViewModel);
+			}
 			return defaultViewModelFactoryWithViewParameter is not null
 					? defaultViewModelFactoryWithViewParameter(view, viewModelType)
 					: defaultViewModelFactory(viewModelType);
