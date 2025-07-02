@@ -25,8 +25,6 @@ public static class AnacondaDistributionContainerExtensions
 		registry.RegisterPythonCore();
 
 		// Allow multiple registrations only for different environments
-		registry.RegisterDialogWindow<AnacondaNotFoundDialogWindow>(nameof(AnacondaNotFoundDialogWindow));
-		registry.RegisterDialog<AnacondaNotFoundDialogView, AnacondaNotFoundDialogViewModel>();
 		registry.RegisterSingleton<AnacondaRegistryResolver>();
 		registry.RegisterSingleton<AnacondaFileResolver>();
 		registry.RegisterSingleton<AnacondaAutoResolver>();

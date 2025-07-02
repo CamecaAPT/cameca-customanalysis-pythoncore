@@ -28,7 +28,26 @@ internal static class InternalDialogService
 		where TViewModel : IDialogAware
 	{
 		parameters ??= new DialogParameters();
-		IDialogWindow dialogWindow = CreateDialogWindow();
+		IDialogWindow dialogWindow = CreateDialogWindow<IDialogWindow>();
+		ConfigureDialogWindowEvents(dialogWindow, callback);
+		// Configure DialogWindow Content
+		var view = ContainerLocator.Container.Resolve<TView>();
+		var viewModel = ContainerLocator.Container.Resolve<TViewModel>();
+		view.DataContext = viewModel;
+		ConfigureDialogWindowProperties(dialogWindow, view, viewModel);
+
+		viewModel.OnDialogOpened(parameters);
+
+		dialogWindow.ShowDialog();
+	}
+
+	public static void ShowDialog<TView, TViewModel, TWindow>(IDialogParameters? parameters, Action<IDialogResult> callback)
+		where TView : FrameworkElement
+		where TViewModel : IDialogAware
+		where TWindow : Window, IDialogWindow
+	{
+		parameters ??= new DialogParameters();
+		IDialogWindow dialogWindow = CreateDialogWindow<TWindow>();
 		ConfigureDialogWindowEvents(dialogWindow, callback);
 		// Configure DialogWindow Content
 		var view = ContainerLocator.Container.Resolve<TView>();
@@ -85,9 +104,10 @@ internal static class InternalDialogService
 		dialogWindow.Closed += closedHandler;
 	}
 
-	private static IDialogWindow CreateDialogWindow() => ContainerLocator.Container.Resolve<IDialogWindow>();
-
-	private static IDialogAware GetDialogViewModel(IDialogWindow dialogWindow) => (IDialogAware)dialogWindow.DataContext;
+	private static IDialogWindow CreateDialogWindow<TWindow>() where TWindow : IDialogWindow
+	{
+		return ContainerLocator.Container.Resolve<TWindow>();
+	}
 
 	private static void ConfigureDialogWindowProperties(IDialogWindow window, FrameworkElement dialogContent, IDialogAware viewModel)
 	{
