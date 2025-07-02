@@ -5,6 +5,7 @@ using System.Windows.Data;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.Input;
 using Prism.Services.Dialogs;
+using UtilitiesControls = Cameca.CustomAnalysis.Utilities.Controls;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
@@ -84,6 +85,16 @@ internal class PythonVenvDialogView : UserControl
 					{
 						HorizontalAlignment = HorizontalAlignment.Center,
 						Columns = 3,
+						Resources = new ResourceDictionary
+						{
+							[typeof(Button)] = new Style(typeof(Button))
+							{
+								Setters =
+								{
+									new Setter(MarginProperty, new Thickness(2, 4, 2, 4)),
+								}
+							},
+						},
 						Children =
 						{
 							new Button
@@ -109,34 +120,64 @@ internal class PythonVenvDialogView : UserControl
 						Text = "Creating the virtual environment might take some time. Please be patient and wait for the success message."
 					}
 					.SetGridRow(2),
-				new AppendingTextBox
+				new UtilitiesControls.AppendingTextBox
 					{
-						AppendScrollBehavior = AppendScrollBehavior.FollowBottom,
+						AppendScrollBehavior = UtilitiesControls.AppendScrollBehavior.FollowBottom,
 						Style = (Style)gridResources["TextBoxStyle"],
 					}
-					.SetBindingEx(AppendingTextBox.ItemsSourceProperty, nameof(PythonVenvDialogViewModel.TextContent))
+					.SetBindingEx(UtilitiesControls.AppendingTextBox.ItemsSourceProperty, nameof(PythonVenvDialogViewModel.TextContent))
 					.SetGridRow(3),
-				new UniformGrid
+				new StackPanel
 					{
-						Columns = 2,
-						Rows = 1,
+						Orientation = Orientation.Horizontal,
 						HorizontalAlignment = HorizontalAlignment.Right,
 						Children =
 						{
-							new Button
+							new TextBlock
+							{
+								VerticalAlignment = VerticalAlignment.Center,
+								HorizontalAlignment = HorizontalAlignment.Right,
+								Foreground = new SolidColorBrush(Colors.Red),
+								Text = "Virtual environment not found",
+							}
+							.SetBindingEx(VisibilityProperty, new Binding(nameof(PythonVenvDialogViewModel.VenvDirMissing))
+							{
+								Mode = BindingMode.OneWay,
+								Converter = new BooleanToVisibilityConverter(),
+							}),
+							new UniformGrid
+							{
+								Columns = 2,
+								Rows = 1,
+								HorizontalAlignment = HorizontalAlignment.Right,
+								Resources = new ResourceDictionary
 								{
-									Content = "Ok",
+									[typeof(Button)] = new Style(typeof(Button))
+									{
+										Setters =
+										{
+											new Setter(MarginProperty, new Thickness(4, 4, 0, 4)),
+										}
+									},
+								},
+								Children =
+								{
+									new Button
+										{
+											Content = "Ok",
+										}
+										.SetBindingEx(ButtonBase.CommandProperty, nameof(PythonVenvDialogViewModel.OkCommand))
+										.SetBindingEx(IsEnabledProperty, new Binding($"{nameof(PythonVenvDialogViewModel.RunCommand)}.{nameof(IAsyncRelayCommand.IsRunning)}")
+										{
+											Converter = (IValueConverter)Resources["InvertBooleanConverter"],
+										}),
+									new Button
+										{
+											Content = "Cancel",
+										}
+										.SetBindingEx(ButtonBase.CommandProperty, nameof(PythonVenvDialogViewModel.CancelCommand)),
 								}
-								.SetBindingEx(ButtonBase.CommandProperty, nameof(PythonVenvDialogViewModel.OkCommand))
-								.SetBindingEx(IsEnabledProperty, new Binding($"{nameof(PythonVenvDialogViewModel.RunCommand)}.{nameof(IAsyncRelayCommand.IsRunning)}")
-								{
-									Converter = (IValueConverter)Resources["InvertBooleanConverter"],
-								}),
-							new Button
-								{
-									Content = "Cancel",
-								}
-								.SetBindingEx(ButtonBase.CommandProperty, nameof(PythonVenvDialogViewModel.CancelCommand)),
+							}
 						}
 					}
 					.SetGridRow(4),
