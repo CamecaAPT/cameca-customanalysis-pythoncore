@@ -11,9 +11,18 @@ public static class PythonCoreContainerExtensions
 			registry.RegisterSingleton<IPythonManager, PythonManager>();
 			registry.RegisterSingleton<IPyExecutor, PyExecutor>();
 		}
-		if (!registry.IsRegistered<PythonService>())
+		registry.RegisterOnce<PythonService>();
+		registry.RegisterOnce<DistributionNotFoundDialogView>();
+		registry.RegisterOnce<DistributionNotFoundDialogViewModel>();
+		registry.RegisterOnce<DistributionNotFoundDialogWindow>();
+		return registry;
+	}
+
+	public static IContainerRegistry RegisterOnce<T>(this IContainerRegistry registry)
+	{
+		if (!registry.IsRegistered<T>())
 		{
-			registry.Register<PythonService>();
+			registry.Register<T>();
 		}
 		return registry;
 	}

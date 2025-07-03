@@ -1,5 +1,4 @@
 ﻿using Microsoft.Extensions.Logging;
-using Prism.Services.Dialogs;
 using Python.Runtime;
 using System;
 using System.Diagnostics;
@@ -12,14 +11,12 @@ internal class AnacondaDistribution : IPyDistribution
 {
 	private readonly ILogger<AnacondaDistribution> logger;
 	private readonly AnacondaAutoResolver autoResolver;
-	private readonly IDialogService dialogService;
 	private readonly AnacondaDistributionOptions options;
 
-	public AnacondaDistribution(ILogger<AnacondaDistribution> logger, AnacondaAutoResolver autoResolver, IDialogService dialogService, AnacondaDistributionOptions options)
+	public AnacondaDistribution(ILogger<AnacondaDistribution> logger, AnacondaAutoResolver autoResolver, AnacondaDistributionOptions options)
 	{
 		this.logger = logger;
 		this.autoResolver = autoResolver;
-		this.dialogService = dialogService;
 		this.options = options;
 	}
 
@@ -164,26 +161,7 @@ internal class AnacondaDistribution : IPyDistribution
 
 	private void ShowPromptForDownload()
 	{
-		var downloadUrl = AnacondaResources.AnacondaDownloadUrl;
-		dialogService.ShowAnacondaNotFound(downloadUrl, result =>
-		{
-			if (result.Result == ButtonResult.OK)
-			{
-				LaunchDownloadUrl(downloadUrl);
-			}
-		});
-	}
-
-	/// <summary>
-	/// Execute download URL with ShellExecute to open download link in default browser
-	/// </summary>
-	/// <param name="downloadUrl"></param>
-	private static void LaunchDownloadUrl(string downloadUrl)
-	{
-		Process.Start(new ProcessStartInfo(downloadUrl)
-		{
-			UseShellExecute = true,
-		});
+		CommonDistributionDialogs.ShowAnacondaDistributionNotFoundDialog();
 	}
 
 	// TODO: Remove unsafe and undocumented workaround for mkl libraries though either AP Suite update or out of process Python

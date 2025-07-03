@@ -245,7 +245,7 @@ public static class PythonLocator
 		return "Unknown";
 	}
 
-	private static string GetPythonType(string pythonExePath)
+	public static string GetPythonType(string pythonExePath)
 	{
 		string directory = Path.GetDirectoryName(pythonExePath) ?? string.Empty;
 		if (Directory.Exists(Path.Join(directory, "conda-meta")))

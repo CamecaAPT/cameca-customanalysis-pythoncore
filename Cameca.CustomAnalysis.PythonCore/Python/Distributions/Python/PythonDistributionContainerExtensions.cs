@@ -1,6 +1,4 @@
-﻿using Microsoft.Extensions.Logging.Abstractions;
-using Microsoft.Extensions.Logging;
-using Prism.Ioc;
+﻿using Prism.Ioc;
 using Cameca.CustomAnalysis.Interface;
 using System.Reflection;
 
@@ -15,8 +13,6 @@ public static class PythonDistributionContainerExtensions
 		registry.RegisterPythonCore();
 
 		registry.RegisterSingleton<IPyDistribution, PythonDistribution>(nameof(PythonDistribution));
-		registry.RegisterDialog<PythonLocatorDialogView, PythonLocatorDialogViewModel>("PythonLocatorDialog");
-		registry.RegisterDialog<PythonVenvDialogView, PythonVenvDialogViewModel>("PythonVenvDialog");
 
 		return registry;
 	}

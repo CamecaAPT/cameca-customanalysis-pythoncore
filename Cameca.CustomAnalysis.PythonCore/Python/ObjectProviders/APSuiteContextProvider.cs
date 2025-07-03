@@ -4,7 +4,6 @@ using Prism.Ioc;
 using Python.Runtime;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 

@@ -1,13 +1,12 @@
 ﻿using Cameca.CustomAnalysis.Interface;
 using Prism.Commands;
 using Prism.Mvvm;
-using Prism.Services.Dialogs;
-using Prism.Ioc;
 using System.ComponentModel.DataAnnotations;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Linq;
+using Prism.Services.Dialogs;
 
 namespace Cameca.CustomAnalysis.PythonCore;
 
@@ -107,37 +106,38 @@ public class PythonOptions : BindableBase
 		}
 
 		var venvPath = Path.Join(extensionDirectory, "venv");
-		ContainerLocator.Container.Resolve<IDialogService>()
-			.ShowPythonVenvDialog(venvPath, PythonExe, extensionDirectory, (result) =>
+		Dialogs.ShowPythonVenvDialog(venvPath, PythonExe, extensionDirectory, (result) =>
+		{
+			switch (result.Parameters.GetValue<PythonCreateVenvResult>("createResult"))
 			{
-				switch (result.Parameters.GetValue<PythonCreateVenvResult>("createResult"))
-				{
-					case PythonCreateVenvResult.Created:
-						PythonVenvDir = venvPath;
-						break;
-					case PythonCreateVenvResult.Deleted:
-						if (PythonVenvDir == venvPath)
-						{
-							PythonVenvDir = null;
-						}
-						break;
-					default:
-						break;
-				}
-			});
+				case PythonCreateVenvResult.Created:
+					PythonVenvDir = venvPath;
+					break;
+				case PythonCreateVenvResult.Deleted:
+					if (PythonVenvDir == venvPath)
+					{
+						PythonVenvDir = null;
+					}
+					break;
+				default:
+					break;
+			}
+		});
 	}
 
 	private void AutoConfigure()
 	{
 		// Check if conda environment
-		bool isCondaEnv = PythonVenvDir is not null && Directory.Exists(Path.Join(PythonVenvDir, "conda-meta"));
-		if (isCondaEnv)
+		if (PythonExe is not null)
 		{
-			ApplyCondaOptions();
-		}
-		else
-		{
-			ApplyDefaultOptions();
+			if (PythonLocator.GetPythonType(PythonExe) == "Conda")
+			{
+				ApplyCondaOptions();
+			}
+			else
+			{
+				ApplyDefaultOptions();
+			}
 		}
 	}
 
@@ -172,6 +172,7 @@ public class PythonOptions : BindableBase
 		PrependPathEnvVar = "";
 		SetNoSiteFlag = true;
 		ApplyCondaIntelMklFix = false;
+		PythonHome = null;
 	}
 
 	private bool CanAutoCreateVenv() => File.Exists(PythonExe);
@@ -180,29 +181,60 @@ public class PythonOptions : BindableBase
 	{
 		var installations = PythonLocator.FindPythonInstallations().ToList();
 
-		var dialogService = ContainerLocator.Container.Resolve<IDialogService>();
-		dialogService.ShowPythonLocatorDialog(installations, (dialogResult) =>
+		// If no installations located, prompt for download
+		if (!installations.Any())
+		{
+			CommonDistributionDialogs.ShowPythonDistributionNotFoundDialog();
+			return;
+		}
+
+		// If a single installation located, simply selected it. No need to force the user to select only item in dialog list.
+		if (installations.Count() == 1)
+		{
+			ApplyPythonInstallation(installations.Single());
+			return;
+		}
+
+		// With mutiple installation found, prompt the user to select which version to use
+		Dialogs.ShowPythonLocatorDialog(installations, (dialogResult) =>
 		{
 			if (dialogResult.Result == ButtonResult.OK && dialogResult.Parameters.GetValue<PythonInstallation?>("selected") is { } selected)
 			{
-				var location = new FileInfo(selected.Path).DirectoryName;
-				// Resolve best DLL
-				if (location is not null && PyPathTools.ResolvePythonDll(location) is { } dllPath)
-				{
-					PythonDll = dllPath;
-				}
-				// Resolve best exe
-				if (File.Exists(selected.Path))
-				{
-					PythonExe = selected.Path;
-				}
-				if (selected.VirtualEnvironment && new FileInfo(selected.Path).Directory is { } directoryInfo)
-				{
-					PythonVenvDir = directoryInfo.FullName;
-				}
+				ApplyPythonInstallation(selected);
 			}
 		});
+	}
 
+	private void ApplyPythonInstallation(PythonInstallation installation)
+	{
+		var prevPythonExe = PythonExe;
+		var prevPythonVenvDir = PythonVenvDir;
+
+		var location = new FileInfo(installation.Path).DirectoryName;
+		// Resolve best DLL
+		if (location is not null && PyPathTools.ResolvePythonDll(location) is { } dllPath)
+		{
+			PythonDll = dllPath;
+		}
+		// Resolve best exe
+		if (File.Exists(installation.Path))
+		{
+			PythonExe = installation.Path;
+		}
+		// Update virtual environment
+		if (installation.VirtualEnvironment && new FileInfo(installation.Path).Directory is { } directoryInfo)
+		{
+			PythonVenvDir = directoryInfo.FullName;
+		}
+		else
+		{
+			PythonVenvDir = null;
+		}
+		AutoConfigure();
+		if (!Directory.Exists(PythonVenvDir))
+		{
+			AutoCreateVenv();
+		}
 	}
 
 	private void OpenDirectory()

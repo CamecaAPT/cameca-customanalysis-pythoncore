@@ -24,6 +24,9 @@ internal partial class PythonVenvDialogViewModel : ObservableObject, IDialogAwar
 
 	public string CmdStatementText => string.Join(Environment.NewLine, CmdStatements) + Environment.NewLine;
 
+	[ObservableProperty]
+	private bool? venvDirMissing;
+
 	public ObservableCollection<string> TextContent { get; } = new();
 
 	public string Title { get; } = "Create Virtual Environment";
@@ -48,6 +51,7 @@ internal partial class PythonVenvDialogViewModel : ObservableObject, IDialogAwar
 	{
 		TextContent.Clear();
 		venvPath = parameters.GetValue<string>("venvPath");
+		UpdateVenvDirMissing();
 		var pythonExePath = parameters.GetValue<string>("pythonExe");
 		var extensionDirectory = parameters.GetValue<string>("extensionDirectory");
 
@@ -106,6 +110,10 @@ internal partial class PythonVenvDialogViewModel : ObservableObject, IDialogAwar
 				AppendText(ex.Message);
 				AppendText(ex.StackTrace);
 			}
+			finally
+			{
+				UpdateVenvDirMissing();
+			}
 		}
 		DeleteCommand.NotifyCanExecuteChanged();
 	}
@@ -137,6 +145,7 @@ internal partial class PythonVenvDialogViewModel : ObservableObject, IDialogAwar
 		finally
 		{
 			DeleteCommand.NotifyCanExecuteChanged();
+			UpdateVenvDirMissing();
 		}
 		// In any case where creation was not successful: mark as deleted as the venv state could be in a corrupted state
 		createResult = PythonCreateVenvResult.Deleted;
@@ -219,6 +228,11 @@ internal partial class PythonVenvDialogViewModel : ObservableObject, IDialogAwar
 			RunCancelCommand.Execute(null);
 		}
 		CloseDialog(ButtonResult.Cancel);
+	}
+
+	private void UpdateVenvDirMissing()
+	{
+		VenvDirMissing = venvPath is null || !Directory.Exists(venvPath);
 	}
 }
 #nullable restore
