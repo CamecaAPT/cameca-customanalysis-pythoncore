@@ -50,11 +50,7 @@ class APSuiteContext:
 
     @property
     def data_section_name(self) -> str:
-        node_info = self._services["INodeInfo"]
-        # This really shouldn't be possible in practice
-        if node_info is None:
-            raise PyAPSuiteError("Data section name is not available")
-        return node_info.DataSectionName
+        return self.resources.DataSectionName
 
     @property
     def ion_count(self) -> int:
