@@ -60,7 +60,7 @@ public class HostCallbacks
 			sectionInfo.IsVirtual,
 			(long)sectionInfo.RecordCount,
 			(int)sectionInfo.ValuesPerRecord,
-			TypeStr.For(sectionInfo.Type!));  // Incorrect API nullability, this will always be non-null
+			CreateBufferDef(sectionInfo).TypeStr);
 	}
 
 	[JsonRpcMethod("sectionData")]
@@ -74,21 +74,12 @@ public class HostCallbacks
 			return null;
 		}
 
-		long count = (long)ionData.IonCount;
-		int valuesPerRecord = (int)section.ValuesPerRecord;
-		long valueCount = count * valuesPerRecord;
-		var valueBytes = section.DataTypeSizeBits / 8;
-		var recordBytes = valueBytes * valuesPerRecord;
-		long capacity = recordBytes * count;
 		string id = Guid.NewGuid().ToString();
-
-		var mmf = MemoryMappedFile.CreateNew(id, capacity);
-		// Type shouldn't be null: the underlying implementation isn't nullable
-		// Possible error in interface type, or null support might only be for creation
-		var bufferDef = new BufferDef(TypeStr.For(section.Type!), [count, valuesPerRecord]);
+		var bufferDef = CreateBufferDef(section);
+		var mmf = MemoryMappedFile.CreateNew(id, bufferDef.Capacity);
 		memMapStore.Set(id, new(mmf, bufferDef));
 
-		using var stream = mmf.CreateViewStream(0, capacity, MemoryMappedFileAccess.Write);
+		using var stream = mmf.CreateViewStream(0, bufferDef.Capacity, MemoryMappedFileAccess.Write);
 		foreach (var chunk in ionData.CreateSectionDataEnumerable(sectionName))
 		{
 			var secBytes = chunk.ReadSectionData<byte>(sectionName);
@@ -123,5 +114,24 @@ public class HostCallbacks
 	public async Task MemMapDispose(string id)
 	{
 		memMapStore.Release(id);
+	}
+
+	private BufferDef CreateBufferDef(ISectionInfo sectionInfo)
+	{
+		long count = (long)sectionInfo.RecordCount;
+		int valuesPerRecord = (int)sectionInfo.ValuesPerRecord;
+		long valueCount = count * valuesPerRecord;
+		var valueBytes = sectionInfo.DataTypeSizeBits / 8;
+		var recordBytes = valueBytes * valuesPerRecord;
+		long capacity = recordBytes * count;
+		// Incorrect API nullability, this will always be non-null
+		var typeStrResolver = TypeStr.For(sectionInfo.Type!);
+		var (typeStr, shape) = typeStrResolver switch
+		{
+			TypeResolver.Fixed fixedResolver => (fixedResolver.TypeStr,  new long[] { count, valuesPerRecord }),
+			TypeResolver.String stringResolver => (stringResolver.Resolve((long)sectionInfo.RecordCount), new long[] { 1 }),
+			_ => throw new InvalidOperationException($"Unexpected TypeResolver subclass {typeStrResolver.GetType()}"),
+		};
+		return new BufferDef(typeStr, shape);
 	}
 }

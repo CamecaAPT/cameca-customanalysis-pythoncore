@@ -10,7 +10,7 @@ public sealed record BufferDef(string TypeStr, long[] Shape)
 	[JsonIgnore]
 	public long Size => Shape.Aggregate(1L, (a, b) => a * b);
 	[JsonIgnore]
-	public Type Type => Rpc.TypeStr.Parse(TypeStr);
+	public Type Type => Rpc.TypeStr.Parse(TypeStr).Type;
 	[JsonIgnore]
 	public long Capacity => Size * Marshal.SizeOf(Type);
 
