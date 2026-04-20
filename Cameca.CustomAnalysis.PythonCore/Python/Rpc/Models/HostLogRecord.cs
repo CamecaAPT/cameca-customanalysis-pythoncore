@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace Cameca.CustomAnalysis.PythonCore.Python.Rpc.Models;
 
@@ -13,6 +14,7 @@ public sealed record HostLogRecord(
 	string? Exception,
 	string? StackInfo)
 {
+	[JsonIgnore]
 	public LogLevel MsLogLevel => Level switch {
 		1 => LogLevel.Debug,
 		2 => LogLevel.Information,

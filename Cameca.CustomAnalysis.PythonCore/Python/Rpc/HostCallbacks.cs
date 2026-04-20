@@ -98,6 +98,17 @@ public class HostCallbacks
 		return new MemMapArrayInfo(id, bufferDef);
 	}
 
+	[JsonRpcMethod("nodes")]
+	public AnalysisTreeNode Nodes()
+	{
+		return BuildAnalysisTreeNodeRecursive(resources.TopLevelNode);
+
+		static AnalysisTreeNode BuildAnalysisTreeNodeRecursive(INodeResource node)
+		{
+			return new AnalysisTreeNode(node.Id.ToString(), node.Children.Select(BuildAnalysisTreeNodeRecursive).ToList());
+		}
+	}
+
 	[JsonRpcMethod("mmap.alloc")]
 	public async Task<string> MemMapAlloc(BufferDef mmapDef)
 	{
