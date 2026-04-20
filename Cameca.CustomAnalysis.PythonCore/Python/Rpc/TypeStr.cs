@@ -4,24 +4,23 @@ namespace Cameca.CustomAnalysis.PythonCore.Python.Rpc;
 
 public static class TypeStr
 {
-    // Parse a typestr like "<f4" into a (Type, int itemSize) pair
-    public static (Type Type, int ItemSize) Parse(string typestr)
+    public static Type Parse(string typestr)
     {
         // strip endian prefix
         var s = typestr.TrimStart('<', '>', '|');
         return s switch
         {
-            "f4" => (typeof(float), 4),
-            "f8" => (typeof(double), 8),
-            "i1" => (typeof(sbyte), 1),
-            "i2" => (typeof(short), 2),
-            "i4" => (typeof(int), 4),
-            "i8" => (typeof(long), 8),
-            "u1" => (typeof(byte), 1),
-            "u2" => (typeof(ushort), 2),
-            "u4" => (typeof(uint), 4),
-            "u8" => (typeof(ulong), 8),
-            "b1" => (typeof(bool), 1),
+            "f4" => typeof(float),
+            "f8" => typeof(double),
+            "i1" => typeof(sbyte),
+            "i2" => typeof(short),
+            "i4" => typeof(int),
+            "i8" => typeof(long),
+            "u1" => typeof(byte),
+            "u2" => typeof(ushort),
+            "u4" => typeof(uint),
+            "u8" => typeof(ulong),
+            "b1" => typeof(bool),
             _ => throw new NotSupportedException($"Unknown typestr: {typestr}")
         };
     }

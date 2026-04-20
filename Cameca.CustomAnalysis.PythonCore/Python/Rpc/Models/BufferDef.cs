@@ -1,3 +1,13 @@
-﻿namespace Cameca.CustomAnalysis.PythonCore.Python.Rpc.Models;
+﻿using System;
+using System.Linq;
+using System.Runtime.InteropServices;
 
-public record BufferDef(string TypeStr, long[] Shape);
+namespace Cameca.CustomAnalysis.PythonCore.Python.Rpc.Models;
+
+public record BufferDef(string TypeStr, long[] Shape)
+{
+	public long Size => Shape.Aggregate(1L, (a, b) => a * b);
+	public Type Type => Rpc.TypeStr.Parse(TypeStr);
+	public long Capacity => Size * Marshal.SizeOf(Type);
+
+}

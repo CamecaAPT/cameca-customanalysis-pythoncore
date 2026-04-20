@@ -1,4 +1,5 @@
 ﻿using Cameca.CustomAnalysis.Interface;
+using Cameca.CustomAnalysis.PythonCore.Python.Rpc.MemMap;
 using Cameca.CustomAnalysis.PythonCore.Python.Rpc.Models;
 using Cameca.CustomAnalysis.Utilities;
 using Microsoft.Extensions.Logging;
@@ -15,13 +16,14 @@ public class HostCallbacks
 {
     private readonly ILogger logger;
     private readonly IResources resources;
-	private Dictionary<string, MemMap> memMaps = new();
+	private readonly MemMapStore memMapStore;
 
-	public HostCallbacks(ILogger logger, IResources resources)
+	public HostCallbacks(ILogger logger, IResources resources, MemMapStore? memMapStore = null)
     {
         this.logger = logger;
         this.resources = resources;
-    }
+		this.memMapStore = memMapStore ?? new MemMapStore();
+	}
 
     [JsonRpcMethod("log")]
     public void Log(HostLogRecord logRecord)
@@ -81,14 +83,10 @@ public class HostCallbacks
 		string id = Guid.NewGuid().ToString();
 
 		var mmf = MemoryMappedFile.CreateNew(id, capacity);
-		if (memMaps.ContainsKey(id))
-		{
-			memMaps[id].Dispose();
-		}
 		// Type shouldn't be null: the underlying implementation isn't nullable
 		// Possible error in interface type, or null support might only be for creation
-		var bufferDef = new BufferDef(TypeStr.For(section.Type!), new long[] { count, valuesPerRecord });
-		memMaps[id] = new MemMap(mmf, bufferDef);
+		var bufferDef = new BufferDef(TypeStr.For(section.Type!), [count, valuesPerRecord]);
+		memMapStore.Set(id, new(mmf, bufferDef));
 
 		using var stream = mmf.CreateViewStream(0, capacity, MemoryMappedFileAccess.Write);
 		foreach (var chunk in ionData.CreateSectionDataEnumerable(sectionName))
@@ -100,17 +98,19 @@ public class HostCallbacks
 		return new MemMapArrayInfo(id, bufferDef);
 	}
 
+	[JsonRpcMethod("mmap.alloc")]
+	public async Task<string> MemMapAlloc(BufferDef mmapDef)
+	{
+		string id = Guid.NewGuid().ToString();
+
+		var mmf = MemoryMappedFile.CreateNew(id, mmapDef.Capacity);
+		memMapStore.Set(id, new(mmf, mmapDef));
+		return id;
+	}
+
 	[JsonRpcMethod("mmap.dispose")]
 	public async Task MemMapDispose(string id)
 	{
-		memMaps[id]?.Dispose();
-	}
-}
-
-internal sealed record MemMap(MemoryMappedFile Mmf, BufferDef Def) : IDisposable
-{
-	public void Dispose()
-	{
-		Mmf.Dispose();
+		memMapStore.Release(id);
 	}
 }
