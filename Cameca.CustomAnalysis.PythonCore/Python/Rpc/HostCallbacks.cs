@@ -89,14 +89,25 @@ public class HostCallbacks
 		return new MemMapArrayInfo(id, bufferDef);
 	}
 
-	[JsonRpcMethod("nodes")]
-	public AnalysisTreeNode Nodes()
+
+	[JsonRpcMethod("analysisId")]
+	public string AnalysisId() => resources.Id.ToString();
+
+	[JsonRpcMethod("analysisTree")]
+	public AnalysisTreeNode AnalysisTree()
 	{
 		return BuildAnalysisTreeNodeRecursive(resources.TopLevelNode);
 
 		static AnalysisTreeNode BuildAnalysisTreeNodeRecursive(INodeResource node)
 		{
-			return new AnalysisTreeNode(node.Id.ToString(), node.Children.Select(BuildAnalysisTreeNodeRecursive).ToList());
+			return new AnalysisTreeNode(
+				node.Id.ToString(),
+				node.Name,
+				node.Title,
+				node.DataSectionName,
+				node.TypeId,
+				node.IonDataOwnerNode.Id.ToString(),
+				node.Children.Select(BuildAnalysisTreeNodeRecursive).ToList());
 		}
 	}
 

@@ -12,6 +12,6 @@ public sealed record BufferDef(string TypeStr, long[] Shape)
 	[JsonIgnore]
 	public Type Type => Rpc.TypeStr.Parse(TypeStr).Type;
 	[JsonIgnore]
-	public long Capacity => Size * Marshal.SizeOf(Type);
+	public long Capacity => Size * Rpc.TypeStr.Parse(TypeStr).ItemSize;
 
 }
