@@ -1,8 +1,5 @@
 ﻿using Cameca.CustomAnalysis.Interface;
-using Cameca.CustomAnalysis.PythonCore.Python.Rpc.MemMap;
-using Cameca.CustomAnalysis.PythonCore.Python.Rpc.Models;
 using Cameca.CustomAnalysis.Utilities;
-using CommunityToolkit.HighPerformance;
 using Microsoft.Extensions.Logging;
 using StreamJsonRpc;
 using System;
@@ -10,13 +7,11 @@ using System.Collections.Generic;
 using System.IO.MemoryMappedFiles;
 using System.Linq;
 using System.Reflection;
-using System.Resources;
 using System.Runtime.InteropServices;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Xml.Linq;
 
-namespace Cameca.CustomAnalysis.PythonCore.Python.Rpc;
+namespace Cameca.CustomAnalysis.PythonCore;
 
 public class HostCallbacks
 {
@@ -31,7 +26,7 @@ public class HostCallbacks
 		this.memMapStore = memMapStore ?? new MemMapStore();
 	}
 
-    [JsonRpcMethod("log")]
+	[JsonRpcMethod("log")]
     public void Log(HostLogRecord logRecord)
 	{
 		using (logger.BeginScope(logRecord.CreateLogContext()))
@@ -135,7 +130,7 @@ public class HostCallbacks
 			&& node.GetType().GetMethod(nameof(INodeResource.GetData)) is MethodInfo method
 			&& method.MakeGenericMethod(parsed) is MethodInfo generic)
 		{
-			var data = generic.Invoke(node, new object[] { null, default(CancellationToken) });
+			var data = generic.Invoke(node, [null, default(CancellationToken)]);
 			return data;
 		}
 		return null;
@@ -176,7 +171,7 @@ public class HostCallbacks
 				r.Volume,
 				r.Min,
 				r.Max,
-				new Color(r.Color.ScR, r.Color.ScG, r.Color.ScB, r.Color.ScA)))
+				new SerializedColor(r.Color.ScR, r.Color.ScG, r.Color.ScB, r.Color.ScA)))
 				.ToList();
 		}
 		return new List<IonRange>();

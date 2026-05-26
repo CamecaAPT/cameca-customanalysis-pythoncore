@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace Cameca.CustomAnalysis.PythonCore.Python.Rpc.MemMap;
+namespace Cameca.CustomAnalysis.PythonCore;
 
 public sealed class MemMapStore : IDisposable
 {

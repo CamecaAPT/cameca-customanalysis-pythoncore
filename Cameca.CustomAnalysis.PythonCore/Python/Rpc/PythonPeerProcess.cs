@@ -1,9 +1,11 @@
-﻿using System;
+﻿using Cameca.CustomAnalysis.PythonCore.Python.Rpc;
+using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace Cameca.CustomAnalysis.PythonCore.Python.Rpc;
+namespace Cameca.CustomAnalysis.PythonCore;
 
 public sealed class PythonPeerProcess : IDisposable
 {
@@ -51,11 +53,11 @@ public sealed class PythonPeerProcess : IDisposable
 
             if (!process.Start())
             {
-                process.Dispose();
+				process.Dispose();
                 throw new InvalidOperationException("Failed to start python process.");
-            }
+			}
 
-            _process = process;
+			_process = process;
         }
     }
 
@@ -114,9 +116,11 @@ public sealed class PythonPeerProcess : IDisposable
         }
     }
 
-    static ProcessStartInfo BuildProcessStartInfo(PythonScriptInfo scriptInfo, ConsoleOptions consoleOptions = null)
+    static ProcessStartInfo BuildProcessStartInfo(PythonScriptInfo scriptInfo, ConsoleOptions? consoleOptions = null)
     {
-        if (!Directory.Exists(scriptInfo.WorkingDirectory))
+		consoleOptions ??= new ConsoleOptions();
+
+		if (!Directory.Exists(scriptInfo.WorkingDirectory))
         {
             throw new ArgumentException("WorkingDirectory must be an existing directory", nameof(scriptInfo));
         }
@@ -129,17 +133,13 @@ public sealed class PythonPeerProcess : IDisposable
         {
             psi = new ProcessStartInfo
             {
-                FileName = pythonExePath,
+                FileName = $"\"{pythonExePath}\"",
                 WorkingDirectory = workingDirectory,
                 UseShellExecute = false,
                 CreateNoWindow = true,
             };
-            // Add common arguments
-            foreach (var arg in scriptInfo.PythonArgs)
-            {
-                psi.ArgumentList.Add(arg);
-            }
-        }
+			BuildArgumentList(psi, scriptInfo.PythonArgs);
+		}
         else
         {
             psi = new ProcessStartInfo
@@ -148,11 +148,29 @@ public sealed class PythonPeerProcess : IDisposable
                 WorkingDirectory = workingDirectory,
                 UseShellExecute = true,
                 CreateNoWindow = true,
-                Arguments = $"/s {(consoleOptions.CloseOnShutdown ? "/c" : "/k")} \"{(string.Join(" ", new string[] { $"\"{scriptInfo.PythonExePath}\"" }.Concat(scriptInfo.PythonArgs)))}\""
-            };
-        }
+				Arguments = $"/s {(consoleOptions.CloseOnShutdown ? "/c" : "/k")} \"{(CreateArgumentsString(new string[] { scriptInfo.PythonExePath }.Concat(scriptInfo.PythonArgs)))}\"",
+			};
+			var args = CreateArgumentsString(new string[] { scriptInfo.PythonExePath }.Concat(scriptInfo.PythonArgs));
+
+		}
         return psi;
     }
+	
+	// Ignore the double quote in value situration: it gets complicated, and in practice this is only going to be used for file paths that can't have that anyways
+	static string QuoteArg(string arg) => arg.IndexOfAny(new[] { ' ', '\t', '\n', '\v'}) >= 0 ? $"\"{arg}\"" : arg;
+
+	static string CreateArgumentsString(IEnumerable<string> pythonArgs)
+	{
+		return string.Join(" ", pythonArgs.Select(QuoteArg));
+	}
+
+	static void BuildArgumentList(ProcessStartInfo psi, string[] pythonArgs)
+	{
+		foreach (var arg in pythonArgs)
+		{
+			psi.ArgumentList.Add(arg);
+		}
+	}
 
     /// <summary>
     /// Returns the fully qualified path by combining the specified path with the working directory if the path is not
@@ -219,3 +237,7 @@ public sealed record PythonScriptInfo(
 public sealed record ConsoleOptions(
     bool ShowConsole = false,
     bool CloseOnShutdown = true);
+
+public sealed record LogOptions(
+	PythonSupportedLogLevel MainLevel = PythonSupportedLogLevel.Information,
+	PythonSupportedLogLevel RpcLevel = PythonSupportedLogLevel.Warning);

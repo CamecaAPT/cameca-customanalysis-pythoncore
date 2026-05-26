@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace Cameca.CustomAnalysis.PythonCore.Python.Rpc.Models;
+namespace Cameca.CustomAnalysis.PythonCore;
 
 public sealed record class AnalysisTreeNode(
 	string Id,

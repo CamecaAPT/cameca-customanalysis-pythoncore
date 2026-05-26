@@ -7,7 +7,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Cameca.CustomAnalysis.PythonCore.Python.Rpc;
+namespace Cameca.CustomAnalysis.PythonCore;
 
 public sealed class RpcPeer<THostCallbacks, TPythonApi> : IDisposable
 	where THostCallbacks : class
@@ -136,7 +136,18 @@ public sealed class RpcPeer<THostCallbacks, TPythonApi> : IDisposable
         if (_proxy is not null)
         {
             // Fire and forget: ask the remote to shut down, but don't block waiting for a response
-            var res = Task.Run(() => _proxy.ShutdownAsync()).Wait(TimeSpan.FromSeconds(2));
+            var res = Task.Run(async () =>
+			{
+				try
+				{
+					await _proxy.ShutdownAsync();
+				}
+				catch (ObjectDisposedException)
+				{
+					// Pass -- if already disposed, there's nothing more possible to do to clean up
+					// TODO: This shouldn't actually happen in normal operation, so once a logger gets in here add a logger.Warn
+				}
+			}).Wait(TimeSpan.FromSeconds(2));
             Debug.WriteLine($"Comleted ShutdownAsync call: {res}");
         }
 

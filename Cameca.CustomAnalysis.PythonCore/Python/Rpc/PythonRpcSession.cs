@@ -1,9 +1,10 @@
-﻿using System;
+﻿using Cameca.CustomAnalysis.PythonCore.Python.Rpc;
+using System;
 using System.IO;
 using System.Reflection;
 using System.Threading;
 
-namespace Cameca.CustomAnalysis.PythonCore.Python.Rpc;
+namespace Cameca.CustomAnalysis.PythonCore;
 
 public class PythonRpcSession<THostCallbacks, TPythonApi> : IDisposable
 	where THostCallbacks : class
@@ -26,23 +27,26 @@ public class PythonRpcSession<THostCallbacks, TPythonApi> : IDisposable
         THostCallbacks callbacks,
         string? workingDirectory = null,
         string? pythonExePath = null,
-        ConsoleOptions? consoleOptions = null)
+        ConsoleOptions? consoleOptions = null,
+		LogOptions? logOptions = null)
     {
         var assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!;
         workingDirectory ??= assemblyDir;
         pythonExePath ??= "venv\\Scripts\\extension-launch.exe";
+		logOptions ??= new LogOptions();
 
-        var server = new RpcPeer<THostCallbacks, TPythonApi>(callbacks);
+		var server = new RpcPeer<THostCallbacks, TPythonApi>(callbacks);
         server.Start();
 
         var scriptInfo = new PythonScriptInfo(
             workingDirectory,
             pythonExePath,
             new string[] {
-                $"\"{path}\"",
+				path,
                 "-H", server.Address,
                 "-p", server.Port.ToString(),
-                "--verbose"
+				"--log", ToLogParam(logOptions.MainLevel),
+				"--log-rpc", ToLogParam(logOptions.RpcLevel),
             });
 
         var pyProcess = PythonPeerProcess.Start(scriptInfo, consoleOptions);
@@ -50,6 +54,16 @@ public class PythonRpcSession<THostCallbacks, TPythonApi> : IDisposable
 
         return new PythonRpcSession<THostCallbacks, TPythonApi>(server, pyProcess, remote);
     }
+
+	static string ToLogParam(PythonSupportedLogLevel level) => level switch
+	{
+		PythonSupportedLogLevel.Debug => "DEBUG",
+		PythonSupportedLogLevel.Information => "INFO",
+		PythonSupportedLogLevel.Warning => "WARNING",
+		PythonSupportedLogLevel.Error => "ERROR",
+		PythonSupportedLogLevel.Critical => "CRITICAL",
+		_ => throw new ArgumentOutOfRangeException(nameof(level), $"Unsupported log level: {level}")
+	};
 
     public void Stop()
     {

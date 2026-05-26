@@ -1,10 +1,7 @@
-﻿using PolyType;
-using StreamJsonRpc;
-using System;
-using System.Threading;
+﻿using StreamJsonRpc;
 using System.Threading.Tasks;
 
-namespace Cameca.CustomAnalysis.PythonCore.Python.Rpc;
+namespace Cameca.CustomAnalysis.PythonCore;
 
 public interface IPythonApiBase
 {

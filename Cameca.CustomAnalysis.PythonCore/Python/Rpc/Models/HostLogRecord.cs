@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
 
-namespace Cameca.CustomAnalysis.PythonCore.Python.Rpc.Models;
+namespace Cameca.CustomAnalysis.PythonCore;
 
 public sealed record HostLogRecord(
 	int Level,

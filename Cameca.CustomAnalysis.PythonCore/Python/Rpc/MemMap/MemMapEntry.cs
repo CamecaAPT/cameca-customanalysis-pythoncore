@@ -1,8 +1,7 @@
-﻿using Cameca.CustomAnalysis.PythonCore.Python.Rpc.Models;
-using System;
+﻿using System;
 using System.IO.MemoryMappedFiles;
 
-namespace Cameca.CustomAnalysis.PythonCore.Python.Rpc.MemMap;
+namespace Cameca.CustomAnalysis.PythonCore;
 
 
 public sealed record MemMapEntry(MemoryMappedFile Mmf, BufferDef Def) : IDisposable
